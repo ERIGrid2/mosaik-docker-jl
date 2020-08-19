@@ -72,7 +72,7 @@ export class MosaikExtension implements IMosaikExtension {
     } );
 
     fileBrowser.model.pathChanged.connect( this._checkIfValidSimDir, this );
-    fileBrowser.model.refreshed.connect( this._checkIfValidSimDir, this );
+    //SfileBrowser.model.refreshed.connect( this._checkIfValidSimDir, this );
   }
 
 
@@ -313,7 +313,7 @@ comm.close( build['status'] )`;
     const code = await response.code;
 
     if ( 0 === code ) {
-      this._stateChanged.emit();
+      this._notifyStateChanged();
       return Promise.resolve( { status: await response.message } );
     }
 
@@ -340,7 +340,7 @@ comm.close( build['status'] )`;
     const code = await response.code;
 
     if ( 0 === code ) {
-      this._stateChanged.emit();
+      this._notifyStateChanged();
       return Promise.resolve( { status: await response.message } );
     }
 
@@ -367,7 +367,7 @@ comm.close( build['status'] )`;
     const code = await response.code;
 
     if ( 0 === code ) {
-      this._stateChanged.emit();
+      this._notifyStateChanged();
       return Promise.resolve( { status: await response.message } );
     }
 
@@ -470,9 +470,6 @@ comm.close( build['status'] )`;
       );
     }
 
-    const status = await this.getSimStatus();
-    this._simStatusWidget.updateStatus( status );
-
     if ( !this._simStatusWidget.isAttached ) {
       // Attach the widget to the main work area if it's not there.
       this._app.shell.add( this._simStatusWidget, 'main' );
@@ -485,6 +482,9 @@ comm.close( build['status'] )`;
 
     // Activate the widget.
     this._app.shell.activateById( this._simStatusWidget.id );
+
+    const status = await this.getSimStatus();
+    await this._simStatusWidget.updateStatus( status );
   }
 
 
@@ -542,7 +542,7 @@ comm.close( build['status'] )`;
     await this._getSimSetupRoot();
 
     if ( oldStatus != this._isValidSimSetup ) {
-      this._stateChanged.emit();
+      this._notifyStateChanged();
     }
 
     return Promise.resolve();
@@ -570,6 +570,15 @@ comm.close( build['status'] )`;
     return Promise.resolve();
   }
 
+  private _notifyStateChanged() {
+    // Emit signal that notifies that the extension state has changed.
+    this._stateChanged.emit();
+
+    // In case the sim status widget is active, update its contents.
+    if ( this._simStatusWidget.isAttached && this._isValidSimSetup ) {
+      this.displaySimStatus();
+    }
+  }
 
   private _app: JupyterFrontEnd | null;
   private _fileBrowser: FileBrowser;

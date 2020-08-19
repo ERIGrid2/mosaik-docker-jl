@@ -4,14 +4,14 @@
   align-items: flex-start;
   overflow: auto;
   display: block;
-  width: 100%; 
+  width: auto; 
 }
 
 
 #mosaik-docker-sim-status .jp-Widget-header {
   color: var(--jp-ui-font-color1);
   display: block;
-  width: 100%; 
+  width: auto; 
   background-color:var(--jp-layout-color2);
   font-size: var(--jp-ui-font-size0);
   font-weight: 600;
@@ -25,7 +25,7 @@
   border-top: solid var(--jp-border-width) var(--jp-border-color2);
   border-bottom: solid var(--jp-border-width) var(--jp-border-color2);
   display: block;
-  width: 100%; 
+  width: auto; 
   padding: 6px 0 6px 12px;
   color: var(--jp-ui-font-color1);
   font-size: var(--jp-ui-font-size1);
@@ -46,7 +46,7 @@
   align-items: flex-start;
   overflow: auto;
   display: block;
-  width: 100%; 
+  width: auto; 
 }
 
 
@@ -62,14 +62,14 @@
   align-items: flex-start;
   overflow: auto;
   display: block;
-  width: 100%; 
+  width: auto; 
 }
 
 
 #mosaik-docker-sim-build .jp-Widget-header {
   color: var(--jp-ui-font-color1);
   display: block;
-  width: 100%; 
+  width: auto; 
   background-color:var(--jp-layout-color2);
   font-size: var(--jp-ui-font-size0);
   font-weight: 600;
@@ -89,7 +89,7 @@
   align-items: flex-start;
   overflow: auto;
   display: block;
-  width: 100%; 
+  width: auto; 
 }
 
 
