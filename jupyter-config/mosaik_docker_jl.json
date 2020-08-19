@@ -1,0 +1,7 @@
+{
+  "NotebookApp": {
+    "nbserver_extensions": {
+      "mosaik_docker_jl": true
+    }
+  }
+}
