@@ -41,7 +41,7 @@ export interface IMosaikExtension extends IDisposable {
 
   checkSimSetup(): Promise<MosaikDockerSim.CheckSimSetupStatus>;
 
-  deleteSimSetup(): Promise<MosaikDockerSim.DeleteSimSetupStatus>;  
+  deleteSimSetup(): Promise<MosaikDockerSim.DeleteSimSetupStatus>;
 
   startSim(): Promise<MosaikDockerSim.StartSimStatus>;
 
@@ -67,7 +67,10 @@ export interface IMosaikExtension extends IDisposable {
 
 
   displaySimStatus(): Promise<void>;
-  
+
+
+  getSimSetupConfigData(): Promise<MosaikDockerSim.ConfigData>;
+
 
   readonly isValidSimSetup: boolean;
 
@@ -132,14 +135,27 @@ export namespace MosaikDockerSim {
 
   export interface SimStatus {
     dir: string;
-    status: { 
-      up: object, 
-      down: object 
+    status: {
+      up: object,
+      down: object
     };
   }
 
   export interface SimIds {
     up: string[];
     down: string[];
+  }
+
+  export interface ConfigData {
+    id: string;
+    orchestrator: {
+      docker_file: string,
+      scenario_file: string,
+      extra_files: string[],
+      extra_dirs: string[],
+      results: string[]
+    },
+    sim_ids_up: string[];
+    sim_ids_down: string[];
   }
 }

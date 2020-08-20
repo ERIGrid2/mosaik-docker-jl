@@ -8,7 +8,6 @@ import {
 } from '@jupyterlab/apputils';
 
 import {
-  //IChangedArgs,
   PathExt
 } from '@jupyterlab/coreutils';
 
@@ -16,6 +15,10 @@ import {
   FileBrowser,
   FileBrowserModel
 } from '@jupyterlab/filebrowser';
+
+import {
+  ContentsManager
+} from '@jupyterlab/services';
 
 import {
   PromiseDelegate
@@ -27,7 +30,8 @@ import {
 } from '@lumino/signaling';
 
 import {
-  IMosaikExtension, MosaikDockerSim
+  IMosaikExtension,
+  MosaikDockerSim
 } from './tokens';
 
 import {
@@ -189,7 +193,7 @@ export class MosaikExtension implements IMosaikExtension {
 
     const commTargetPrefix = `buildSimSetup@${ simSetupPath }#`;
 
-    // Specify code to be execute on the server. Use callback interface 'comm'
+    // Specify code to be executed on the server. Use callback interface 'comm'
     // to send back output (see function executeWithCallbacks for details).
     const code = `
 from mosaik_docker.cli.build_sim_setup import build_sim_setup
@@ -199,7 +203,7 @@ comm.close( build['status'] )`;
     const check = new PromiseDelegate();
 
     try {
-      const execuetReply = await executeWithCallbacks(
+      const executeReply = await executeWithCallbacks(
         commTargetPrefix,
         code,
         msg => {
@@ -214,7 +218,7 @@ comm.close( build['status'] )`;
       // Wait for the callback interface to be closed on our side.
       await check.promise;
 
-      const status = await execuetReply.status;
+      const status = await executeReply.status;
 
       if ( status === 'ok' ) {
         return Promise.resolve();
@@ -485,6 +489,29 @@ comm.close( build['status'] )`;
 
     const status = await this.getSimStatus();
     await this._simStatusWidget.updateStatus( status );
+  }
+
+
+  async getSimSetupConfigData(): Promise<MosaikDockerSim.ConfigData> {
+
+    try {
+      // Specify path to config file of current sim setup.
+      if ( undefined === this._userHomeDir ) await this.retrieveUserHomeDir();
+      const relSetupPath = PathExt.relative( this._userHomeDir, this._simSetupRoot );
+      const configFilePath = PathExt.join( relSetupPath, 'mosaik-docker.json' );
+
+      // Retrieve the file from the server.
+      const contentManager = new ContentsManager();
+      const contentModel = await contentManager.get( configFilePath );
+
+      // Parse the file content and return it as promise.
+      const data: MosaikDockerSim.ConfigData = JSON.parse( contentModel.content );
+      return Promise.resolve( data );
+    } catch ( error ) {
+      return Promise.reject(
+        `[mosaik-docker-jl] getSimSetupConfigData() failed!\n${ error }`
+      );
+    }
   }
 
 
