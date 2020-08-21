@@ -108,10 +108,10 @@ class ConfigureSimSetupHandler( ExeHandler ):
         # Retrieve data.
         data = json.loads( self.request.body.decode( 'utf-8' ) )
         dir = data['dir'] if data['dir'] else '.'
-        scenario_file = data['scenario_file'].strip()
-        docker_file = data['docker_file'].strip()
-        extra_files = [ f.strip() for f in data['extra_files'] ]
-        extra_dirs = [ d.strip() for d in data['extra_dirs'] ]
+        scenario_file = data['scenarioFile'].strip()
+        docker_file = data['dockerFile'].strip()
+        extra_files = [ f.strip() for f in data['extraFiles'] ]
+        extra_dirs = [ d.strip() for d in data['extraDirs'] ]
         results = [ r.strip() for r in data['results'] ]
 
         # Execute `configure_sim_setup` command and retrieve response.

@@ -9,114 +9,79 @@ import {
   showErrorMessage
 } from '@jupyterlab/apputils';
 
-import {
-  IFileBrowserFactory
-} from '@jupyterlab/filebrowser';
+import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
-import {
-  IMainMenu
-} from '@jupyterlab/mainmenu';
+import { IMainMenu } from '@jupyterlab/mainmenu';
 
-import {
-  IMosaikExtension
-} from './tokens';
+import { IMosaikExtension } from './tokens';
 
-import {
-  MosaikExtension
-} from './model';
+import { MosaikExtension } from './model';
 
-import {
-  addCommands
-} from './commands';
+import { addCommands } from './commands';
 
-import {
-  addSimMenu
-} from './widgets/sim-menu';
+import { addSimMenu } from './widgets/sim-menu';
 
-import {
-  addSimSetupCreateButton
-} from './widgets/sim-setup-create-button';
+import { addSimSetupCreateButton } from './widgets/sim-setup-create-button';
 
 // import {
-  // SimStatusWidget
+// SimStatusWidget
 // } from './widgets/sim-status-widget';
 
-import {
-  addSimTab
-} from './widgets/sim-tab';
-
+import { addSimTab } from './widgets/sim-tab';
 
 /**
  * Initialization data for the mosaik-docker-jl extension.
  */
 const extension: JupyterFrontEndPlugin<IMosaikExtension> = {
   id: 'mosaik-docker-jl',
-  requires: [
-    IFileBrowserFactory,
-    ILayoutRestorer,
-    IMainMenu
-  ],
+  requires: [IFileBrowserFactory, ILayoutRestorer, IMainMenu],
   provides: IMosaikExtension,
   activate: activateExtension,
   autoStart: true
 };
 
-
 export default extension;
-
 
 async function activateExtension(
   app: JupyterFrontEnd,
   fileBrowserFactory: IFileBrowserFactory,
   restorer: ILayoutRestorer,
   mainMenu: IMainMenu
-) : Promise<IMosaikExtension>
-{
+): Promise<IMosaikExtension> {
   // Get a reference to the default file browser extension
   const fileBrowser = fileBrowserFactory.defaultBrowser;
 
-  const mosaikExtension = new MosaikExtension( app, fileBrowser, restorer );
+  const mosaikExtension = new MosaikExtension(app, fileBrowser, restorer);
 
   try {
     const version = await mosaikExtension.getVersion();
     console.log(
-      `[mosaik-docker-jl] JupyterLab extension activated, version = ${version.version }`
+      `[mosaik-docker-jl] JupyterLab extension activated, version = ${
+        version.version
+      }`
     );
-    
+
     //await mosaikExtension.retrieveUserHomeDir();
     //console.log(
     //  `[mosaik-docker-jl] user home directory = ${ mosaikExtension.userHomeDir }`
     //);
-  } catch ( error ) {
+  } catch (error) {
     console.error(
-      `[mosaik-docker-jl] the mosaik_docker_jl server extension appears to be missing.\n${ error }`
+      `[mosaik-docker-jl] the mosaik_docker_jl server extension appears to be missing.\n${error}`
     );
     showErrorMessage(
-      'The mosaik_docker_jl server extension appears to be missing!', error
+      'The mosaik_docker_jl server extension appears to be missing!',
+      error
     );
   }
 
-  addCommands(
-    app,
-    mosaikExtension
-  );
+  addCommands(app, mosaikExtension);
 
-  addSimMenu(
-    app,
-    mainMenu
-  );
+  addSimMenu(app, mainMenu);
 
-  addSimSetupCreateButton(
-    app,
-    mosaikExtension,
-    fileBrowser
-  );
+  addSimSetupCreateButton(app, mosaikExtension, fileBrowser);
 
-  addSimTab(
-    app,
-    mosaikExtension,
-    restorer
-  );
+  addSimTab(app, mosaikExtension, restorer);
 
-  return Promise.resolve( mosaikExtension );
+  return Promise.resolve(mosaikExtension);
 }

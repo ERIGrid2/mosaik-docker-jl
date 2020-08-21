@@ -1,6 +1,4 @@
-import {
-  URLExt
-} from '@jupyterlab/coreutils';
+import { URLExt } from '@jupyterlab/coreutils';
 
 import {
   KernelManager,
@@ -8,15 +6,9 @@ import {
   ServerConnection
 } from '@jupyterlab/services';
 
-import {
-  //PromiseDelegate,
-  UUID
-} from '@lumino/coreutils';
+import { UUID } from '@lumino/coreutils';
 
-import {
-  MosaikDockerSim
-} from './tokens'
-
+import { MosaikDockerSim } from './tokens';
 
 /**
  * Send a request to the server.
@@ -25,20 +17,19 @@ import {
  */
 export async function sendRequest(
   endPoint: string,
-  method: string = 'GET',
-  request: Object = null
-): Promise<MosaikDockerSim.APIResponse> {
-
+  method = 'GET',
+  request: Record<string, any> = null
+): Promise<MosaikDockerSim.IAPIResponse> {
   let fullRequest: RequestInit;
 
-  if ( request === null ) {
+  if (request === null) {
     fullRequest = {
       method: method
     };
   } else {
     fullRequest = {
       method: method,
-      body: JSON.stringify( request )
+      body: JSON.stringify(request)
     };
   }
 
@@ -54,70 +45,68 @@ export async function sendRequest(
   let response: Response;
   try {
     response = await ServerConnection.makeRequest(
-      requestUrl, fullRequest, settings
+      requestUrl,
+      fullRequest,
+      settings
     );
-  } catch ( error ) {
-    return Promise.reject(
-      new ServerConnection.NetworkError( error )
-    );
+  } catch (error) {
+    return Promise.reject(new ServerConnection.NetworkError(error));
   }
 
-  let data: MosaikDockerSim.APIResponse;
+  let data: MosaikDockerSim.IAPIResponse;
   try {
     data = await response.json();
-  } catch ( error ) {
-    return Promise.reject( { error, response } );
+  } catch (error) {
+    return Promise.reject({ error, response });
   }
 
-  if ( !response.ok ) {
-    return Promise.reject(
-      new ServerConnection.ResponseError( response )
-    );
+  if (!response.ok) {
+    return Promise.reject(new ServerConnection.ResponseError(response));
   }
 
-  return Promise.resolve( data );
+  return Promise.resolve(data);
 }
-
 
 export async function executeWithCallbacks(
   commTargetPrefix: string,
   executeCode: string,
-  onMsg: ( msg: KernelMessage.ICommMsgMsg ) => void | PromiseLike<void>,
-  onClose: ( msg: KernelMessage.ICommCloseMsg ) => void | PromiseLike<void>
-): Promise<MosaikDockerSim.ExecuteResponse> {
-
-  const commTarget = commTargetPrefix + UUID.uuid4()
+  onMsg: (msg: KernelMessage.ICommMsgMsg) => void | PromiseLike<void>,
+  onClose: (msg: KernelMessage.ICommCloseMsg) => void | PromiseLike<void>
+): Promise<MosaikDockerSim.IExecuteResponse> {
+  const commTarget = commTargetPrefix + UUID.uuid4();
 
   // Start a python kernel
   const kernelManager = new KernelManager();
-  const kernel = await kernelManager.startNew( { name: 'python' } );
+  const kernel = await kernelManager.startNew({ name: 'python' });
 
-  kernel.registerCommTarget( commTarget, ( comm, commMsg ) => {
-      if ( commMsg.content.target_name !== commTarget ) { return; }
-      comm.onMsg = onMsg;
-      comm.onClose = onClose;
+  kernel.registerCommTarget(commTarget, (comm, commMsg) => {
+    if (commMsg.content.target_name !== commTarget) {
+      return;
     }
-  );
+    comm.onMsg = onMsg;
+    comm.onClose = onClose;
+  });
 
-  const code = `from mosaik_docker_jl.comm import CallbackComm\n` +
-    `comm = CallbackComm( '${ commTarget }' )\n` +
+  const code =
+    'from mosaik_docker_jl.comm import CallbackComm\n' +
+    `comm = CallbackComm( '${commTarget}' )\n` +
     executeCode;
 
-  const reply: KernelMessage.IExecuteReplyMsg = await kernel.requestExecute( { code: code } ).done;
+  const reply: KernelMessage.IExecuteReplyMsg = await kernel.requestExecute({
+    code: code
+  }).done;
   const status = await reply.content.status;
 
   try {
     await kernel.shutdown();
-  } catch ( error ) {
-    return Promise.reject( { status: 'kernel-error', error: error } );
+  } catch (error) {
+    return Promise.reject({ status: 'kernel-error', error: error });
   }
 
-  if ( status === 'error' ) {
+  if (status === 'error') {
     const errorMessage = reply.content as KernelMessage.IReplyErrorContent;
-    return Promise.reject( { status: status, error: errorMessage.evalue } );
+    return Promise.reject({ status: status, error: errorMessage.evalue });
   }
 
-  return Promise.resolve( { status: status } );
+  return Promise.resolve({ status: status });
 }
-
-

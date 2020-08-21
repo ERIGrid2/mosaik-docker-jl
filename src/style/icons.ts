@@ -1,7 +1,4 @@
-import {
-  LabIcon 
-} from '@jupyterlab/ui-components';
-
+import { LabIcon } from '@jupyterlab/ui-components';
 
 import buttonSimSetupCreateSvgStr from '../../style/images/mosaik-button-sim-setup-create.svg';
 import mosaikDockerSvgStr from '../../style/images/mosaik-docker.svg';
@@ -16,97 +13,62 @@ import simResultsSvgStr from '../../style/images/mosaik-sim-results.svg';
 import simStartSvgStr from '../../style/images/mosaik-sim-start.svg';
 import simStatusSvgStr from '../../style/images/mosaik-sim-status.svg';
 
+export const buttonSimSetupCreateIcon = new LabIcon({
+  name: 'ui-components:button-sim-setup-create',
+  svgstr: buttonSimSetupCreateSvgStr
+});
 
+export const mosaikDockerIcon = new LabIcon({
+  name: 'ui-components:mosaik-docker',
+  svgstr: mosaikDockerSvgStr
+});
 
-export const buttonSimSetupCreateIcon = new LabIcon(
-  { 
-    name: 'ui-components:button-sim-setup-create', 
-    svgstr: buttonSimSetupCreateSvgStr
-  }
-);
+export const simSetupBuildIcon = new LabIcon({
+  name: 'ui-components:sim-setup-build',
+  svgstr: simSetupBuildSvgStr
+});
 
+export const simSetupCheckIcon = new LabIcon({
+  name: 'ui-components:sim-setup-check',
+  svgstr: simSetupCheckSvgStr
+});
 
-export const mosaikDockerIcon = new LabIcon(
-  { 
-    name: 'ui-components:mosaik-docker', 
-    svgstr: mosaikDockerSvgStr 
-  }
-);
+export const simSetupDeleteIcon = new LabIcon({
+  name: 'ui-components:sim-setup-delete',
+  svgstr: simSetupDeleteSvgStr
+});
 
+export const simSetupConfigIcon = new LabIcon({
+  name: 'ui-components:sim-setup-config',
+  svgstr: simSetupConfigSvgStr
+});
 
-export const simSetupBuildIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-setup-build', 
-    svgstr: simSetupBuildSvgStr
-  }
-);
+export const simSetupCreateIcon = new LabIcon({
+  name: 'ui-components:sim-setup-create',
+  svgstr: simSetupCreateSvgStr
+});
 
+export const simCancelIcon = new LabIcon({
+  name: 'ui-components:sim-cancel',
+  svgstr: simCancelSvgStr
+});
 
-export const simSetupCheckIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-setup-check', 
-    svgstr: simSetupCheckSvgStr
-  }
-);
+export const simClearIcon = new LabIcon({
+  name: 'ui-components:sim-clear',
+  svgstr: simClearSvgStr
+});
 
+export const simResultsIcon = new LabIcon({
+  name: 'ui-components:sim-results',
+  svgstr: simResultsSvgStr
+});
 
-export const simSetupDeleteIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-setup-delete', 
-    svgstr: simSetupDeleteSvgStr
-  }
-);
+export const simStartIcon = new LabIcon({
+  name: 'ui-components:sim-start',
+  svgstr: simStartSvgStr
+});
 
-
-export const simSetupConfigIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-setup-config', 
-    svgstr: simSetupConfigSvgStr 
-  }
-);
-
-
-export const simSetupCreateIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-setup-create', 
-    svgstr: simSetupCreateSvgStr 
-  }
-);
-
-
-export const simCancelIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-cancel', 
-    svgstr: simCancelSvgStr
-  }
-);
-
-
-export const simClearIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-clear', 
-    svgstr: simClearSvgStr
-  }
-);
-
-
-export const simResultsIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-results', 
-    svgstr: simResultsSvgStr
-  }
-);
-
-export const simStartIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-start', 
-    svgstr: simStartSvgStr 
-  }
-);
-
-export const simStatusIcon = new LabIcon(
-  { 
-    name: 'ui-components:sim-status', 
-    svgstr: simStatusSvgStr
-  }
-);
+export const simStatusIcon = new LabIcon({
+  name: 'ui-components:sim-status',
+  svgstr: simStatusSvgStr
+});

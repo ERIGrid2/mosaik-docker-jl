@@ -1,16 +1,11 @@
-import {
-  Widget
-} from '@lumino/widgets';
+import { Widget } from '@lumino/widgets';
 
-
-export interface SimSelectReturnValue {
-  selectAll: boolean,
-  selectItem?: string
+export interface ISimSelectReturnValue {
+  selectAll: boolean;
+  selectItem?: string;
 }
 
-
-export interface SimSelectOptions {
-
+export interface ISimSelectOptions {
   textSelectAll: string;
 
   textSelectItem: string;
@@ -21,42 +16,37 @@ export interface SimSelectOptions {
   items: Array<string>;
 }
 
-
 export class SimSelectForm extends Widget {
-
-
-  constructor( options: SimSelectOptions ) {
-    super( { node: SimSelectForm.createFormNode( options ) } );
+  constructor(options: ISimSelectOptions) {
+    super({ node: SimSelectForm.createFormNode(options) });
     this.id = 'mosaik-docker-sim-select-form';
   }
 
-
-  private static createFormNode( options: SimSelectOptions ): HTMLElement {
-
+  private static createFormNode(options: ISimSelectOptions): HTMLElement {
     // Create HTML elements.
-    const node = document.createElement( 'div' );
-    const label = document.createElement( 'label' );
-    const divSelectAll = document.createElement( 'div' );
-    const inputSelectAll = document.createElement( 'input' );
-    const textSelectAll = document.createElement( 'span' );
-    const inputSelectItem = document.createElement( 'select' );
-    const textSelectItem = document.createElement( 'span' );
+    const node = document.createElement('div');
+    const label = document.createElement('label');
+    const divSelectAll = document.createElement('div');
+    const inputSelectAll = document.createElement('input');
+    const textSelectAll = document.createElement('span');
+    const inputSelectItem = document.createElement('select');
+    const textSelectItem = document.createElement('span');
 
     // Add section with ID selection.
     textSelectItem.textContent = options.textSelectItem;
-    options.items.forEach( ( item, index ) => {
-      const option = document.createElement( 'option' );
-      if ( index === 0 ) {
+    options.items.forEach((item, index) => {
+      const option = document.createElement('option');
+      if (index === 0) {
         option.selected = true;
       }
       option.value = item;
       option.textContent = item;
-      inputSelectItem.appendChild( option );
-    } );
+      inputSelectItem.appendChild(option);
+    });
 
     // Add checkbox to select all.
     textSelectAll.textContent = options.textSelectAll;
-    inputSelectAll.classList.add( 'jp-mod-styled' );
+    inputSelectAll.classList.add('jp-mod-styled');
     inputSelectAll.type = 'checkbox';
     inputSelectAll.checked = false;
 
@@ -68,31 +58,29 @@ export class SimSelectForm extends Widget {
     textSelectAll.className = 'jp-SimSelectForm-text';
 
     // Define structure.
-    label.appendChild( textSelectItem );
-    label.appendChild( inputSelectItem );
-    label.appendChild( divSelectAll );
-    divSelectAll.appendChild( inputSelectAll );
-    divSelectAll.appendChild( textSelectAll );
+    label.appendChild(textSelectItem);
+    label.appendChild(inputSelectItem);
+    label.appendChild(divSelectAll);
+    divSelectAll.appendChild(inputSelectAll);
+    divSelectAll.appendChild(textSelectAll);
 
-    node.appendChild( label );
+    node.appendChild(label);
     return node;
   }
 
-
   /**
-  * Returns the input value.
-  */
-  getValue(): SimSelectReturnValue {
-
-    const inputNodesList = this.node.querySelectorAll( 'input' );
+   * Returns the input value.
+   */
+  getValue(): ISimSelectReturnValue {
+    const inputNodesList = this.node.querySelectorAll('input');
     const selectAll = inputNodesList[0].checked;
 
-    if ( true === selectAll ) {
+    if (true === selectAll) {
       return {
         selectAll: true
       };
     } else {
-      const selectNodesList = this.node.querySelectorAll( 'select' );
+      const selectNodesList = this.node.querySelectorAll('select');
       const selectItem = selectNodesList[0].value;
 
       return {
@@ -101,5 +89,4 @@ export class SimSelectForm extends Widget {
       };
     }
   }
-
 }

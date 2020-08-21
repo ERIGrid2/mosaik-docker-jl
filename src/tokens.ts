@@ -1,32 +1,19 @@
-import {
-  Token
-} from '@lumino/coreutils';
+import { Token } from '@lumino/coreutils';
 
-import {
-  IDisposable
-} from '@lumino/disposable';
+import { IDisposable } from '@lumino/disposable';
 
-import {
-  ISignal
-} from '@lumino/signaling';
-
+import { ISignal } from '@lumino/signaling';
 
 export const EXTENSION_ID = 'jupyter.extensions.mosaik_docker_plugin';
 
-
 // tslint:disable-next-line: variable-name
-export const IMosaikExtension = new Token<IMosaikExtension>( EXTENSION_ID );
-
+export const IMosaikExtension = new Token<IMosaikExtension>(EXTENSION_ID);
 
 /** Interface for extension class */
 export interface IMosaikExtension extends IDisposable {
+  getVersion(): Promise<MosaikDockerSim.IVersion>;
 
-  getVersion(): Promise<MosaikDockerSim.Version>;
-
-  createSimSetup(
-    name: string
-  ): Promise<MosaikDockerSim.CreateSimSetupStatus>;
-
+  createSimSetup(name: string): Promise<MosaikDockerSim.ICreateSimSetupStatus>;
 
   configureSimSetup(
     scenarioFile: string,
@@ -34,43 +21,32 @@ export interface IMosaikExtension extends IDisposable {
     extraFiles: Array<string>,
     extraDirs: Array<string>,
     results: Array<string>
-  ): Promise<MosaikDockerSim.CreateSimSetupStatus>;
-
+  ): Promise<MosaikDockerSim.ICreateSimSetupStatus>;
 
   buildSimSetup(): Promise<void>;
 
-  checkSimSetup(): Promise<MosaikDockerSim.CheckSimSetupStatus>;
+  checkSimSetup(): Promise<MosaikDockerSim.ICheckSimSetupStatus>;
 
-  deleteSimSetup(): Promise<MosaikDockerSim.DeleteSimSetupStatus>;
+  deleteSimSetup(): Promise<MosaikDockerSim.IDeleteSimSetupStatus>;
 
-  startSim(): Promise<MosaikDockerSim.StartSimStatus>;
+  startSim(): Promise<MosaikDockerSim.IStartSimStatus>;
 
+  cancelSim(simId: string): Promise<MosaikDockerSim.ICancelSimStatus>;
 
-  cancelSim(
-    simId: string
-  ): Promise<MosaikDockerSim.CancelSimStatus>;
+  clearSim(simId: string): Promise<MosaikDockerSim.IClearSimStatus>;
 
-  clearSim(
-    simId: string
-  ): Promise<MosaikDockerSim.ClearSimStatus>;
+  getSimResults(simId: string): Promise<MosaikDockerSim.IGetSimResultsStatus>;
 
-  getSimResults(
-    simId: string
-  ): Promise<MosaikDockerSim.GetSimResultsStatus>;
-
-  getSimIds(): Promise<MosaikDockerSim.SimIds>;
+  getSimIds(): Promise<MosaikDockerSim.ISimIds>;
 
   /**
    * Inquire simulation status.
    */
-  getSimStatus(): Promise<MosaikDockerSim.SimStatus>;
-
+  getSimStatus(): Promise<MosaikDockerSim.ISimStatus>;
 
   displaySimStatus(): Promise<void>;
 
-
-  getSimSetupConfigData(): Promise<MosaikDockerSim.ConfigData>;
-
+  getSimSetupConfigData(): Promise<MosaikDockerSim.IConfigData>;
 
   readonly isValidSimSetup: boolean;
 
@@ -81,80 +57,78 @@ export interface IMosaikExtension extends IDisposable {
   readonly stateChanged: ISignal<this, void>;
 }
 
-
 export namespace MosaikDockerSim {
-
-  export interface APIResponse {
+  export interface IAPIResponse {
     code: number;
     message?: any;
     error?: string;
   }
 
-  export interface ExecuteResponse {
+  export interface IExecuteResponse {
     status: string;
     error?: string;
   }
 
-  export interface Version {
+  export interface IVersion {
     version: string;
   }
 
-  export interface CreateSimSetupStatus {
+  export interface ICreateSimSetupStatus {
     status: string;
   }
 
-  export interface ConfigureSimSetupStatus {
+  export interface IConfigureSimSetupStatus {
     status: string;
   }
 
-  export interface CheckSimSetupStatus {
+  export interface ICheckSimSetupStatus {
     valid: boolean;
     status: string;
   }
 
-  export interface DeleteSimSetupStatus {
+  export interface IDeleteSimSetupStatus {
     valid: boolean;
     status: string;
   }
 
-  export interface StartSimStatus {
+  export interface IStartSimStatus {
     status: string;
   }
 
-  export interface CancelSimStatus {
+  export interface ICancelSimStatus {
     status: string;
   }
 
-  export interface ClearSimStatus {
+  export interface IClearSimStatus {
     status: string;
   }
 
-  export interface GetSimResultsStatus {
+  export interface IGetSimResultsStatus {
     status: string;
   }
 
-  export interface SimStatus {
+  export interface ISimStatus {
     dir: string;
     status: {
-      up: object,
-      down: object
+      up: object;
+      down: object;
     };
   }
 
-  export interface SimIds {
+  export interface ISimIds {
     up: string[];
     down: string[];
   }
 
-  export interface ConfigData {
+  export interface IConfigData {
     id: string;
     orchestrator: {
-      docker_file: string,
-      scenario_file: string,
-      extra_files: string[],
-      extra_dirs: string[],
-      results: string[]
-    },
+      docker_file: string;
+      scenario_file: string;
+      extra_files: string[];
+      extra_dirs: string[];
+      results: string[];
+    };
     sim_ids_up: string[];
     sim_ids_down: string[];
   }

@@ -12,6 +12,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   rules: {
+    '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/interface-name-prefix': [
       'error',
       { prefixWithI: 'always' }
@@ -27,6 +28,7 @@ module.exports = {
     ],
     curly: ['error', 'all'],
     eqeqeq: 'error',
-    'prefer-arrow-callback': 'error'
+    'prefer-arrow-callback': 'error',
+    'no-inner-declarations': 'off'
   }
 };
