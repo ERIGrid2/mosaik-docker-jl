@@ -4,7 +4,7 @@
   "description": "A JupyterLab extension for executing co-simulations based on the mosaik framework and Docker.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "style": "style/index.css",
+  "style": "style/base.css",
   "license": "BSD-3-Clause",
   "author": "Edmund Widl",
   "keywords": [
@@ -63,7 +63,7 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "mkdirp": "^1.0.5",
+    "mkdirp": "^1.0.4",
     "prettier": "1.16.4",
     "rimraf": "^2.7.1",
     "typescript": "~3.7.5"
