@@ -156,22 +156,22 @@ export class CommandItem implements CommandPalette.IItem {
 export namespace SimCommandTab {
   export interface IOptions {
     /**
-    * The command registry for use with the command side bar tab.
-    */
+     * The command registry for use with the command side bar tab.
+     */
     commands: CommandRegistry;
-  
+
     /**
-    * The category for use with the command side bar tab.
-    */
+     * The category for use with the command side bar tab.
+     */
     category: string;
-  
+
     /**
-    * A custom renderer for use with the command side bar tab.
-    *
-    * The default is a shared renderer instance.
-    */
+     * A custom renderer for use with the command side bar tab.
+     *
+     * The default is a shared renderer instance.
+     */
     renderer: CommandPalette.IRenderer;
-  
+
     model: IMosaikExtension;
   }
 }

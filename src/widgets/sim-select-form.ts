@@ -1,7 +1,6 @@
 import { Widget } from '@lumino/widgets';
 
 export namespace SimSelectForm {
-  
   export interface IOptions {
     textSelectAll: string;
 

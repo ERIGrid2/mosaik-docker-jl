@@ -4,10 +4,7 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import {
-  //WidgetTracker,
-  showErrorMessage
-} from '@jupyterlab/apputils';
+import { showErrorMessage } from '@jupyterlab/apputils';
 
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
@@ -22,10 +19,6 @@ import { addCommands } from './commands';
 import { addSimMenu } from './widgets/sim-menu';
 
 import { addSimSetupCreateButton } from './widgets/sim-setup-create-button';
-
-// import {
-// SimStatusWidget
-// } from './widgets/sim-status-widget';
 
 import { addSimTab } from './widgets/sim-tab';
 

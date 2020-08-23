@@ -28,7 +28,7 @@ export namespace MosaikExtension {
   export interface IOptions {
     app: JupyterFrontEnd;
     fileBrowser: FileBrowser;
-    restorer: ILayoutRestorer;  
+    restorer: ILayoutRestorer;
   }
 }
 
@@ -49,7 +49,10 @@ export class MosaikExtension implements IMosaikExtension {
       name: () => 'sim-status-widget'
     });
 
-    options.fileBrowser.model.pathChanged.connect(this._checkIfValidSimDir, this);
+    options.fileBrowser.model.pathChanged.connect(
+      this._checkIfValidSimDir,
+      this
+    );
     //fileBrowser.model.refreshed.connect( this._checkIfValidSimDir, this );
   }
 

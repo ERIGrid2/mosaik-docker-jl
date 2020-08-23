@@ -12,7 +12,7 @@ export namespace SimStatusWidget {
   export interface IOptions extends Widget.IOptions {
     model: IMosaikExtension;
   }
-  
+
   export interface IComponentProperties {
     model: IMosaikExtension;
   }
