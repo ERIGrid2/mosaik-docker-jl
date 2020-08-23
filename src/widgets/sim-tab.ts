@@ -20,6 +20,162 @@ import { CommandIDs } from '../command-ids';
 
 import { mosaikDockerIcon } from '../style/icons';
 
+export namespace CommandItem {
+  export interface IOptions extends CommandPalette.IItemOptions {
+    commands: CommandRegistry;
+  }
+}
+
+/**
+ * A concrete implementation of `CommandPalette.IItem`.
+ */
+export class CommandItem implements CommandPalette.IItem {
+  /**
+   * Construct a new command item.
+   */
+  constructor(options: CommandItem.IOptions) {
+    this._commands = options.commands;
+    this.category = this._normalizeCategory(options.category);
+    this.command = options.command;
+    this.args = options.args || JSONExt.emptyObject;
+    this.rank = options.rank !== undefined ? options.rank : Infinity;
+  }
+
+  /**
+   * The category for the command item.
+   */
+  readonly category: string;
+
+  /**
+   * The command to execute when the item is triggered.
+   */
+  readonly command: string;
+
+  /**
+   * The arguments for the command.
+   */
+  readonly args: ReadonlyJSONObject;
+
+  /**
+   * The rank for the command item.
+   */
+  readonly rank: number;
+
+  /**
+   * The display label for the command item.
+   */
+  get label(): string {
+    return this._commands.label(this.command, this.args);
+  }
+
+  /**
+   * The icon renderer for the command item.
+   */
+  get icon():
+    | VirtualElement.IRenderer
+    | undefined /* <DEPRECATED> */
+    | string /* </DEPRECATED> */ {
+    return this._commands.icon(this.command, this.args);
+  }
+
+  /**
+   * The icon class for the command item.
+   */
+  get iconClass(): string {
+    //return this._commands.iconClass( this.command, this.args );
+    return 'jp-SideTab-itemIcon';
+  }
+
+  /**
+   * The icon label for the command item.
+   */
+  get iconLabel(): string {
+    return this._commands.iconLabel(this.command, this.args);
+  }
+
+  /**
+   * The display caption for the command item.
+   */
+  get caption(): string {
+    return this._commands.caption(this.command, this.args);
+  }
+
+  /**
+   * The extra class name for the command item.
+   */
+  get className(): string {
+    //return this._commands.className( this.command, this.args );
+    return 'jp-SideTab-item';
+  }
+
+  /**
+   * The dataset for the command item.
+   */
+  get dataset(): CommandRegistry.Dataset {
+    return this._commands.dataset(this.command, this.args);
+  }
+
+  /**
+   * Whether the command item is enabled.
+   */
+  get isEnabled(): boolean {
+    return this._commands.isEnabled(this.command, this.args);
+  }
+
+  /**
+   * Whether the command item is toggled.
+   */
+  get isToggled(): boolean {
+    return this._commands.isToggled(this.command, this.args);
+  }
+
+  /**
+   * Whether the command item is visible.
+   */
+  get isVisible(): boolean {
+    return this._commands.isVisible(this.command, this.args);
+  }
+
+  /**
+   * The key binding for the command item.
+   */
+  get keyBinding(): CommandRegistry.IKeyBinding | null {
+    return null;
+  }
+
+  /**
+   * Normalize a category for a command item.
+   */
+  private _normalizeCategory(category: string): string {
+    return category.trim().replace(/\s+/g, ' ');
+  }
+
+  private _commands: CommandRegistry;
+}
+
+export namespace SimCommandTab {
+  export interface IOptions {
+    /**
+    * The command registry for use with the command side bar tab.
+    */
+    commands: CommandRegistry;
+  
+    /**
+    * The category for use with the command side bar tab.
+    */
+    category: string;
+  
+    /**
+    * A custom renderer for use with the command side bar tab.
+    *
+    * The default is a shared renderer instance.
+    */
+    renderer: CommandPalette.IRenderer;
+  
+    model: IMosaikExtension;
+  }
+}
+
 /**
  * A widget which displays command items in a side bar tab.
  */
@@ -29,7 +185,7 @@ export class SimCommandTab extends Widget {
    *
    * @param options - The options for initializing the side bar tab.
    */
-  constructor(options: Private.IOptions) {
+  constructor(options: SimCommandTab.IOptions) {
     super({ node: Private.createNode() });
 
     // Reuse style from CommandPalette.
@@ -96,10 +252,10 @@ export class SimCommandTab extends Widget {
    */
   addItem(command: string): CommandPalette.IItem {
     const category = this._category;
-    const options = { command, category };
+    const options = { commands: this.commands, command, category };
 
     // Create a new command item for the options.
-    const item = Private.createItem(this.commands, options);
+    const item = new CommandItem(options);
 
     // Add the item to the array.
     this._items.push(item);
@@ -234,167 +390,6 @@ namespace Private {
     node.appendChild(header);
     node.appendChild(content);
     return node;
-  }
-
-  /**
-   * Create a new command item from a command registry and options.
-   */
-  export function createItem(
-    commands: CommandRegistry,
-    options: CommandPalette.IItemOptions
-  ): CommandPalette.IItem {
-    return new CommandItem(commands, options);
-  }
-
-  /**
-   * Normalize a category for a command item.
-   */
-  function normalizeCategory(category: string): string {
-    return category.trim().replace(/\s+/g, ' ');
-  }
-
-  /**
-   * A concrete implementation of `CommandPalette.IItem`.
-   */
-  class CommandItem implements CommandPalette.IItem {
-    /**
-     * Construct a new command item.
-     */
-    constructor(
-      commands: CommandRegistry,
-      options: CommandPalette.IItemOptions
-    ) {
-      this._commands = commands;
-      this.category = normalizeCategory(options.category);
-      this.command = options.command;
-      this.args = options.args || JSONExt.emptyObject;
-      this.rank = options.rank !== undefined ? options.rank : Infinity;
-    }
-
-    /**
-     * The category for the command item.
-     */
-    readonly category: string;
-
-    /**
-     * The command to execute when the item is triggered.
-     */
-    readonly command: string;
-
-    /**
-     * The arguments for the command.
-     */
-    readonly args: ReadonlyJSONObject;
-
-    /**
-     * The rank for the command item.
-     */
-    readonly rank: number;
-
-    /**
-     * The display label for the command item.
-     */
-    get label(): string {
-      return this._commands.label(this.command, this.args);
-    }
-
-    /**
-     * The icon renderer for the command item.
-     */
-    get icon():
-      | VirtualElement.IRenderer
-      | undefined /* <DEPRECATED> */
-      | string /* </DEPRECATED> */ {
-      return this._commands.icon(this.command, this.args);
-    }
-
-    /**
-     * The icon class for the command item.
-     */
-    get iconClass(): string {
-      //return this._commands.iconClass( this.command, this.args );
-      return 'jp-SideTab-itemIcon';
-    }
-
-    /**
-     * The icon label for the command item.
-     */
-    get iconLabel(): string {
-      return this._commands.iconLabel(this.command, this.args);
-    }
-
-    /**
-     * The display caption for the command item.
-     */
-    get caption(): string {
-      return this._commands.caption(this.command, this.args);
-    }
-
-    /**
-     * The extra class name for the command item.
-     */
-    get className(): string {
-      //return this._commands.className( this.command, this.args );
-      return 'jp-SideTab-item';
-    }
-
-    /**
-     * The dataset for the command item.
-     */
-    get dataset(): CommandRegistry.Dataset {
-      return this._commands.dataset(this.command, this.args);
-    }
-
-    /**
-     * Whether the command item is enabled.
-     */
-    get isEnabled(): boolean {
-      return this._commands.isEnabled(this.command, this.args);
-    }
-
-    /**
-     * Whether the command item is toggled.
-     */
-    get isToggled(): boolean {
-      return this._commands.isToggled(this.command, this.args);
-    }
-
-    /**
-     * Whether the command item is visible.
-     */
-    get isVisible(): boolean {
-      return this._commands.isVisible(this.command, this.args);
-    }
-
-    /**
-     * The key binding for the command item.
-     */
-    get keyBinding(): CommandRegistry.IKeyBinding | null {
-      return null;
-    }
-
-    private _commands: CommandRegistry;
-  }
-
-  export interface IOptions {
-    /**
-     * The command registry for use with the command side bar tab.
-     */
-    commands: CommandRegistry;
-
-    /**
-     * The category for use with the command side bar tab.
-     */
-    category: string;
-
-    /**
-     * A custom renderer for use with the command side bar tab.
-     *
-     * The default is a shared renderer instance.
-     */
-    renderer: CommandPalette.IRenderer;
-
-    model: IMosaikExtension;
   }
 }
 

@@ -6,8 +6,6 @@ import { IMosaikExtension } from './tokens';
 
 import { CommandIDs } from './command-ids';
 
-import { SimSetupConfigureForm } from './widgets/sim-setup-configure-form';
-
 import { SimSetupCreateForm } from './widgets/sim-setup-create-form';
 
 import { SimSelectForm } from './widgets/sim-select-form';
@@ -67,35 +65,10 @@ export function addCommands(
     isEnabled: () => model.isValidSimSetup,
     icon: simSetupConfigIcon,
     execute: async () => {
-      const configData = await model.getSimSetupConfigData();
-
-      const result = await showDialog({
-        title: 'Configure Simulation Setup',
-        body: new SimSetupConfigureForm(configData),
-        focusNodeSelector: 'input',
-        buttons: [
-          Dialog.cancelButton(),
-          Dialog.okButton({ label: 'CONFIGURE' })
-        ]
-      });
-
-      if (result.button.accept) {
-        try {
-          const config = await model.configureSimSetup(
-            result.value.scenarioFile,
-            result.value.dockerFile,
-            result.value.extraFiles,
-            result.value.extraDirs,
-            result.value.results
-          );
-          console.log(`[${CommandIDs.configureSimSetup}] ${config.status}`);
-        } catch (error) {
-          console.error(error);
-          showErrorMessage(
-            'An error occurred while attempting to configure the simulation setup!',
-            error
-          );
-        }
+      try {
+        await model.displaySimSetupConfiguration();
+      } catch (error) {
+        console.error(error);
       }
     }
   });

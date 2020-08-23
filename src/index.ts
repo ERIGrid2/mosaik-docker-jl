@@ -51,7 +51,7 @@ async function activateExtension(
   // Get a reference to the default file browser extension
   const fileBrowser = fileBrowserFactory.defaultBrowser;
 
-  const mosaikExtension = new MosaikExtension(app, fileBrowser, restorer);
+  const mosaikExtension = new MosaikExtension({ app, fileBrowser, restorer });
 
   try {
     const version = await mosaikExtension.getVersion();

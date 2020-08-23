@@ -1,28 +1,31 @@
 import { Widget } from '@lumino/widgets';
 
-export interface ISimSelectReturnValue {
-  selectAll: boolean;
-  selectItem?: string;
-}
+export namespace SimSelectForm {
+  
+  export interface IOptions {
+    textSelectAll: string;
 
-export interface ISimSelectOptions {
-  textSelectAll: string;
+    textSelectItem: string;
 
-  textSelectItem: string;
+    /**
+     * List of choices
+     */
+    items: Array<string>;
+  }
 
-  /**
-   * List of choices
-   */
-  items: Array<string>;
+  export interface IReturnValue {
+    selectAll: boolean;
+    selectItem?: string;
+  }
 }
 
 export class SimSelectForm extends Widget {
-  constructor(options: ISimSelectOptions) {
+  constructor(options: SimSelectForm.IOptions) {
     super({ node: SimSelectForm.createFormNode(options) });
     this.id = 'mosaik-docker-sim-select-form';
   }
 
-  private static createFormNode(options: ISimSelectOptions): HTMLElement {
+  private static createFormNode(options: SimSelectForm.IOptions): HTMLElement {
     // Create HTML elements.
     const node = document.createElement('div');
     const label = document.createElement('label');
@@ -71,7 +74,7 @@ export class SimSelectForm extends Widget {
   /**
    * Returns the input value.
    */
-  getValue(): ISimSelectReturnValue {
+  getValue(): SimSelectForm.IReturnValue {
     const inputNodesList = this.node.querySelectorAll('input');
     const selectAll = inputNodesList[0].checked;
 

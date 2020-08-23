@@ -20,30 +20,36 @@ import { executeWithCallbacks, sendRequest } from './mosaik-docker-jl';
 
 import { SimStatusWidget } from './widgets/sim-status-widget';
 
+import { SimSetupConfigureWidget } from './widgets/sim-setup-configure-widget';
+
 import { SimSetupBuildWidget } from './widgets/sim-setup-build-widget';
+
+export namespace MosaikExtension {
+  export interface IOptions {
+    app: JupyterFrontEnd;
+    fileBrowser: FileBrowser;
+    restorer: ILayoutRestorer;  
+  }
+}
 
 /** Main extension class */
 export class MosaikExtension implements IMosaikExtension {
-  constructor(
-    app: JupyterFrontEnd,
-    fileBrowser: FileBrowser,
-    restorer: ILayoutRestorer
-  ) {
-    this._app = app;
-    this._fileBrowser = fileBrowser;
+  constructor(options: MosaikExtension.IOptions) {
+    this._app = options.app;
+    this._fileBrowser = options.fileBrowser;
     this._stateChanged = new Signal<this, void>(this);
 
-    this._simStatusWidget = new SimStatusWidget(this);
+    this._simStatusWidget = new SimStatusWidget({ model: this });
     this._simStatusWidgetTracker = new WidgetTracker<SimStatusWidget>({
       namespace: 'sim-status-widget'
     });
-    restorer.restore(this._simStatusWidgetTracker, {
+    options.restorer.restore(this._simStatusWidgetTracker, {
       command: CommandIDs.getSimStatus,
       args: () => ({ suppressError: true }),
       name: () => 'sim-status-widget'
     });
 
-    fileBrowser.model.pathChanged.connect(this._checkIfValidSimDir, this);
+    options.fileBrowser.model.pathChanged.connect(this._checkIfValidSimDir, this);
     //fileBrowser.model.refreshed.connect( this._checkIfValidSimDir, this );
   }
 
@@ -102,19 +108,16 @@ export class MosaikExtension implements IMosaikExtension {
   }
 
   async configureSimSetup(
-    scenarioFile: string,
-    dockerFile: string,
-    extraFiles: Array<string>,
-    extraDirs: Array<string>,
-    results: Array<string>
+    data: MosaikDockerSim.IOrchestratorConfigData,
+    dir?: string
   ): Promise<MosaikDockerSim.IConfigureSimSetupStatus> {
     const response = await sendRequest('configure_sim_setup', 'POST', {
-      dir: this._simSetupRoot,
-      dockerFile: dockerFile,
-      scenarioFile: scenarioFile,
-      extraFiles: extraFiles,
-      extraDirs: extraDirs,
-      results: results
+      dir: dir === undefined ? this._simSetupRoot : dir,
+      dockerFile: data.dockerFile,
+      scenarioFile: data.scenarioFile,
+      extraFiles: data.extraFiles,
+      extraDirs: data.extraDirs,
+      results: data.results
     });
 
     const code = await response.code;
@@ -133,8 +136,8 @@ export class MosaikExtension implements IMosaikExtension {
   }
 
   async buildSimSetup(): Promise<void> {
-    const simSetupPath = this._simSetupRoot;
-    const simSetupBuildWidget = new SimSetupBuildWidget(simSetupPath);
+    const simSetupDir = this._simSetupRoot;
+    const simSetupBuildWidget = new SimSetupBuildWidget({ simSetupDir });
 
     // Attach the widget to the main work area.
     this._app.shell.add(simSetupBuildWidget, 'main');
@@ -142,13 +145,13 @@ export class MosaikExtension implements IMosaikExtension {
     // Activate the widget
     this._app.shell.activateById(simSetupBuildWidget.id);
 
-    const commTargetPrefix = `buildSimSetup@${simSetupPath}#`;
+    const commTargetPrefix = `buildSimSetup@${simSetupDir}#`;
 
     // Specify code to be executed on the server. Use callback interface 'comm'
     // to send back output (see function executeWithCallbacks for details).
     const code = `
 from mosaik_docker.cli.build_sim_setup import build_sim_setup
-build = build_sim_setup( '${simSetupPath}', comm.send_line )
+build = build_sim_setup( '${simSetupDir}', comm.send_line )
 comm.close( build['status'] )`;
 
     const check = new PromiseDelegate();
@@ -400,6 +403,33 @@ comm.close( build['status'] )`;
 
     const status = await this.getSimStatus();
     await this._simStatusWidget.updateStatus(status);
+
+    return Promise.resolve();
+  }
+
+  async displaySimSetupConfiguration(): Promise<void> {
+    // await this._fileBrowser.model.restored;
+    // await this._getSimSetupRoot();
+
+    if (!this._isValidSimSetup) {
+      const path = this._simSetupRoot;
+      return Promise.reject(
+        `[mosaik-docker-jl] displaySimSetupConfiguration() failed!\ninvalid directory:${path}`
+      );
+    }
+
+    const simSetupConfigureWidget = new SimSetupConfigureWidget({
+      model: this,
+      configData: await this.getSimSetupConfigData()
+    });
+
+    // Attach the widget to the main work area.
+    this._app.shell.add(simSetupConfigureWidget, 'main');
+
+    // Activate the widget
+    this._app.shell.activateById(simSetupConfigureWidget.id);
+
+    return Promise.resolve();
   }
 
   async getSimSetupConfigData(): Promise<MosaikDockerSim.IConfigData> {
@@ -419,9 +449,23 @@ comm.close( build['status'] )`;
       const contentModel = await contentManager.get(configFilePath);
 
       // Parse the file content and return it as promise.
-      const data: MosaikDockerSim.IConfigData = JSON.parse(
-        contentModel.content
-      );
+      const jsonData = JSON.parse(contentModel.content);
+
+      const orchData: MosaikDockerSim.IOrchestratorConfigData = {
+        scenarioFile: jsonData.orchestrator.scenario_file,
+        dockerFile: jsonData.orchestrator.docker_file,
+        extraFiles: jsonData.orchestrator.extra_files,
+        extraDirs: jsonData.orchestrator.extra_dirs,
+        results: jsonData.orchestrator.results
+      };
+
+      const data: MosaikDockerSim.IConfigData = {
+        id: jsonData.id,
+        orchestrator: orchData,
+        simIdsUp: jsonData.sim_ids_up,
+        simIdsDown: jsonData.sim_ids_down
+      };
+
       return Promise.resolve(data);
     } catch (error) {
       return Promise.reject(

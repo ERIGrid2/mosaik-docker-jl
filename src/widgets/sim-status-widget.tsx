@@ -8,9 +8,19 @@ import { IMosaikExtension, MosaikDockerSim } from '../tokens';
 
 import { simStatusIcon } from '../style/icons';
 
+export namespace SimStatusWidget {
+  export interface IOptions extends Widget.IOptions {
+    model: IMosaikExtension;
+  }
+  
+  export interface IComponentProperties {
+    model: IMosaikExtension;
+  }
+}
+
 export class SimStatusWidget extends ReactWidget {
   /// Constructor.
-  constructor(model: IMosaikExtension, options?: Widget.IOptions) {
+  constructor(options: SimStatusWidget.IOptions) {
     super(options);
 
     this.node.id = 'mosaik-docker-sim-status';
@@ -18,7 +28,7 @@ export class SimStatusWidget extends ReactWidget {
     this.title.icon = simStatusIcon;
     this.title.closable = true;
 
-    this._model = model;
+    this._model = options.model;
   }
 
   /// Render the widget.
@@ -35,7 +45,7 @@ export class SimStatusWidget extends ReactWidget {
     const simsDown = await simStatus.down;
 
     // Retrieve HTML element (div) for displaying the status information.
-    const elements = this.node.getElementsByClassName('jp-Widget');
+    const elements = this.node.getElementsByClassName('jp-Content');
     if (1 !== elements.length) {
       console.error(
         `[mosaik-docker-jl] SimStatusWidget: wrong number of elements with class name 'jp-Widget' (${
@@ -52,17 +62,17 @@ export class SimStatusWidget extends ReactWidget {
 
     // Create header.
     const statusHeader = document.createElement('span');
-    statusHeader.className = 'jp-Widget-header';
+    statusHeader.className = 'jp-Content-header';
     statusHeader.innerText = `Simulation setup location: ${simSetupDir}`;
 
     // Create heading for list with running simulations.
     const simsUpHeader = document.createElement('span');
-    simsUpHeader.className = 'jp-Widget-list-header';
+    simsUpHeader.className = 'jp-Content-list-header';
     simsUpHeader.innerText = 'Running Simulations';
 
     // Create and fill list with running simulations.
     const simsUpList = document.createElement('ul');
-    simsUpList.className = 'jp-Widget-list';
+    simsUpList.className = 'jp-Content-list';
     for (const [id, info] of Object.entries(simsUp)) {
       const simUpElem = document.createElement('li');
       simUpElem.innerText = `${id}: ${info}`;
@@ -71,12 +81,12 @@ export class SimStatusWidget extends ReactWidget {
 
     // Create heading for list with finished simulations.
     const simsDownHeader = document.createElement('span');
-    simsDownHeader.className = 'jp-Widget-list-header';
+    simsDownHeader.className = 'jp-Content-list-header';
     simsDownHeader.innerText = 'Finished Simulations';
 
     // Create and fill list with finished simulations.
     const simsDownList = document.createElement('ul');
-    simsDownList.className = 'jp-Widget-list';
+    simsDownList.className = 'jp-Content-list';
     for (const [id, info] of Object.entries(simsDown)) {
       const simsDownElem = document.createElement('li');
       simsDownElem.innerText = `${id}: ${info}`;
@@ -94,15 +104,11 @@ export class SimStatusWidget extends ReactWidget {
   private _model: IMosaikExtension;
 }
 
-export interface ISimStatusComponentProps {
-  model: IMosaikExtension;
-}
-
 export class SimStatusComponent extends React.Component<
-  ISimStatusComponentProps
+  SimStatusWidget.IComponentProperties
 > {
   /// Constructor.
-  constructor(props: ISimStatusComponentProps) {
+  constructor(props: SimStatusWidget.IComponentProperties) {
     super(props);
   }
 
@@ -113,17 +119,16 @@ export class SimStatusComponent extends React.Component<
    */
   render(): React.ReactElement {
     return (
-      <div>
-        <div className="jp-Widget">
-          // This will be updated by calling SimStatusWidget's updateStatus
-          method.
+      <div className="jp-Widget">
+        <div className="jp-Content">
+          <div className="jp-SpinnerContent" />
         </div>
-        <div className="jp-Widget-button-span">
+        <div className="jp-Dialog-span">
           <button
-            className="jp-Dialog-button jp-mod-reject jp-mod-styled"
+            className="jp-mod-reject jp-mod-styled"
             onClick={() => this.props.model.displaySimStatus()}
           >
-            Refresh
+            REFRESH
           </button>
         </div>
       </div>

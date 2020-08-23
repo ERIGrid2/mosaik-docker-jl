@@ -1,14 +1,18 @@
-#mosaik-docker-sim-status .jp-Widget {
-  padding: 0 0 0 0;
-  flex-direction: column;
-  align-items: flex-start;
+#mosaik-docker-sim-setup-config .jp-Widget {
   overflow: auto;
-  display: block;
+  height: inherit;
   width: auto; 
 }
 
+#mosaik-docker-sim-setup-config .jp-Content {
+  padding: 0 0 0 0;
+  flex-direction: column;
+  align-items: flex-start;
+  display: block;
+  width: auto;
+}
 
-#mosaik-docker-sim-status .jp-Widget-header {
+#mosaik-docker-sim-setup-config .jp-Content-header {
   color: var(--jp-ui-font-color1);
   display: block;
   width: auto; 
@@ -20,8 +24,58 @@
   text-transform: uppercase;
 }
 
+#mosaik-docker-sim-setup-config .jp-Content-input-header {
+  //border-top: solid var(--jp-border-width) var(--jp-border-color2);
+  display: block;
+  width: auto; 
+  padding: 6px 0 6px 12px;
+  color: var(--jp-ui-font-color1);
+  font-size: var(--jp-ui-font-size1);
+  font-weight: 700;
+}
 
-#mosaik-docker-sim-status .jp-Widget-list-header {
+#mosaik-docker-sim-setup-config .jp-Content-input {
+  display: block;
+  width: -moz-available; 
+  margin: 2px 12px 4px 12px;
+  padding: 4px 6px 4px 6px;
+  color: var(--jp-ui-font-color1);
+  font-size: var(--jp-ui-font-size1);
+  font-weight: 400;
+}
+
+#mosaik-docker-sim-setup-config .jp-Dialog-span {
+  padding: 12px 0 12px 12px;
+  border-top: solid var(--jp-border-width) var(--jp-border-color2);
+}
+
+#mosaik-docker-sim-status .jp-Widget {
+  overflow: auto;
+  height: inherit;
+  width: auto; 
+}
+
+#mosaik-docker-sim-status .jp-Content {
+  padding: 0 0 0 0;
+  flex-direction: column;
+  align-items: flex-start;
+  display: block;
+  width: auto; 
+}
+
+#mosaik-docker-sim-status .jp-Content-header {
+  color: var(--jp-ui-font-color1);
+  display: block;
+  width: auto; 
+  background-color:var(--jp-layout-color2);
+  font-size: var(--jp-ui-font-size0);
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 12px 0 12px 12px;
+  text-transform: uppercase;
+}
+
+#mosaik-docker-sim-status .jp-Content-list-header {
   border-top: solid var(--jp-border-width) var(--jp-border-color2);
   border-bottom: solid var(--jp-border-width) var(--jp-border-color2);
   display: block;
@@ -32,8 +86,7 @@
   font-weight: 700;
 }
 
-
-#mosaik-docker-sim-status .jp-Widget-list {
+#mosaik-docker-sim-status .jp-Content-list {
   list-style-type: square;
   list-style-position: inside;
   margin: 6px 0 6px 8px;
@@ -49,12 +102,10 @@
   width: auto; 
 }
 
-
-#mosaik-docker-sim-status .jp-Widget-button-span {
-  padding-left: 12px;
-  padding-top: 36px;
+#mosaik-docker-sim-status .jp-Dialog-span {
+  padding: 12px 0 12px 12px;
+  border-top: solid var(--jp-border-width) var(--jp-border-color2);
 }
-
 
 #mosaik-docker-sim-build .jp-Widget {
   padding: 0 0 0 0;
@@ -64,7 +115,6 @@
   display: block;
   width: auto; 
 }
-
 
 #mosaik-docker-sim-build .jp-Widget-header {
   color: var(--jp-ui-font-color1);
@@ -77,7 +127,6 @@
   padding: 12px 0 12px 12px;
   text-transform: uppercase;
 }
-
 
 #mosaik-docker-sim-build .jp-Widget-content {
   margin: 6px 0 6px 8px;
@@ -92,7 +141,6 @@
   width: auto; 
 }
 
-
 #mosaik-docker-sim-tab .jp-SideTab-content {
   margin-top: 8px;
   padding: 0px 12px;
@@ -101,21 +149,17 @@
   overflow: visible;
 }
 
-
 #mosaik-docker-sim-tab .jp-SideTab-item {
 }
-
 
 #mosaik-docker-sim-tab .jp-SideTab-itemIcon {
   margin-right: 8px;
   top: 0px;
 }
 
-
 #mosaik-docker-sim-select-form .jp-SimSelectForm-div {
   display: flex;
 }
-
 
 #mosaik-docker-sim-select-form .jp-SimSelectForm-text {
   margin-left: 7px;

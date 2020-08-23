@@ -15,23 +15,30 @@ export function addSimSetupCreateButton(
   model: IMosaikExtension,
   fileBrowser: FileBrowser
 ): void {
-  const simSetupCreateButton = new SimSetupCreateButton(app, model);
+  const simSetupCreateButton = new SimSetupCreateButton({ app, model });
 
   fileBrowser.toolbar.addItem('simSetupCreateButton', simSetupCreateButton);
 }
 
+export namespace SimSetupCreateButton {
+  export interface IOptions {
+    app: JupyterFrontEnd;
+    model: IMosaikExtension;
+  }
+}
+
 export class SimSetupCreateButton extends ToolbarButton {
-  constructor(app: JupyterFrontEnd, model: IMosaikExtension) {
+  constructor(options: SimSetupCreateButton.IOptions) {
     super({
       icon: buttonSimSetupCreateIcon,
       onClick: () => {
-        if (!model.isValidSimSetup) {
-          app.commands.execute(CommandIDs.createSimSetup);
+        if (!options.model.isValidSimSetup) {
+          options.app.commands.execute(CommandIDs.createSimSetup);
         } else {
           showDialog({
             title: 'Create simulation setup',
             body: `Cannot create a new simulation setup as subfolder of an existing setup:\n${
-              model.simSetupRoot
+              options.model.simSetupRoot
             }`,
             buttons: [Dialog.cancelButton({ label: 'OK' })]
           });

@@ -6,13 +6,19 @@ import { JSONObject } from '@lumino/coreutils';
 
 import { simSetupBuildIcon } from '../style/icons';
 
+export namespace SimSetupBuildWidget {
+  export interface IOptions {
+    simSetupDir: string;
+  }
+}
+
 export class SimSetupBuildWidget extends MainAreaWidget {
-  constructor(simSetupDir: string) {
+  constructor(options: SimSetupBuildWidget.IOptions) {
     super({ content: new Widget() });
 
     this.id = 'mosaik-docker-sim-build';
     this.title.icon = simSetupBuildIcon;
-    this.title.label = 'Docker Build Status: ' + simSetupDir;
+    this.title.label = 'Docker Build Status: ' + options.simSetupDir;
     this.title.closable = true;
 
     this.content.addClass('jp-Widget');
@@ -20,7 +26,9 @@ export class SimSetupBuildWidget extends MainAreaWidget {
 
     const statusHeader = document.createElement('span');
     statusHeader.className = 'jp-Widget-header';
-    statusHeader.innerText = `Simulation setup location: ${simSetupDir}`;
+    statusHeader.innerText = `Simulation setup location: ${
+      options.simSetupDir
+    }`;
     this.content.node.appendChild(statusHeader);
 
     this._statusContent = document.createElement('span');
