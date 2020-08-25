@@ -64,6 +64,7 @@ setup_args = dict(
     install_requires = [
         'jupyterlab>=2.0',
         'ipykernel',
+        'mosaik-docker@git+https://github.com/ERIGrid2/mosaik-docker.git'
     ],
     zip_safe = False,
     include_package_data = True,
