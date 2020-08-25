@@ -396,7 +396,7 @@ namespace Private {
 export function addSimTab(
   app: JupyterFrontEnd,
   model: IMosaikExtension,
-  restorer: ILayoutRestorer
+  restorer: ILayoutRestorer | null
 ): void {
   const { commands, shell } = app;
   const category = 'mosaik-docker Commands';
@@ -413,5 +413,7 @@ export function addSimTab(
 
   shell.add(simTab, 'left', { rank: 300 });
 
-  restorer.add(simTab, 'sim-tab');
+  if (restorer) {
+    restorer.add(simTab, 'sim-tab');
+  }
 }

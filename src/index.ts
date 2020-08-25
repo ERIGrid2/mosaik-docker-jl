@@ -8,6 +8,8 @@ import { showErrorMessage } from '@jupyterlab/apputils';
 
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
+import { ILauncher } from '@jupyterlab/launcher';
+
 import { IMainMenu } from '@jupyterlab/mainmenu';
 
 import { IMosaikExtension } from './tokens';
@@ -15,6 +17,8 @@ import { IMosaikExtension } from './tokens';
 import { MosaikExtension } from './model';
 
 import { addCommands } from './commands';
+
+import { addLauncherItems } from './widgets/launcher-items';
 
 import { addSimMenu } from './widgets/sim-menu';
 
@@ -27,7 +31,8 @@ import { addSimTab } from './widgets/sim-tab';
  */
 const extension: JupyterFrontEndPlugin<IMosaikExtension> = {
   id: 'mosaik-docker-jl',
-  requires: [IFileBrowserFactory, ILayoutRestorer, IMainMenu],
+  requires: [IFileBrowserFactory],
+  optional: [ILauncher, ILayoutRestorer, IMainMenu],
   provides: IMosaikExtension,
   activate: activateExtension,
   autoStart: true
@@ -38,8 +43,9 @@ export default extension;
 async function activateExtension(
   app: JupyterFrontEnd,
   fileBrowserFactory: IFileBrowserFactory,
-  restorer: ILayoutRestorer,
-  mainMenu: IMainMenu
+  launcher: ILauncher | null,
+  restorer: ILayoutRestorer | null,
+  mainMenu: IMainMenu | null
 ): Promise<IMosaikExtension> {
   // Get a reference to the default file browser extension
   const fileBrowser = fileBrowserFactory.defaultBrowser;
@@ -53,11 +59,6 @@ async function activateExtension(
         version.version
       }`
     );
-
-    //await mosaikExtension.retrieveUserHomeDir();
-    //console.log(
-    //  `[mosaik-docker-jl] user home directory = ${ mosaikExtension.userHomeDir }`
-    //);
   } catch (error) {
     console.error(
       `[mosaik-docker-jl] the mosaik_docker_jl server extension appears to be missing.\n${error}`
@@ -70,11 +71,17 @@ async function activateExtension(
 
   addCommands(app, mosaikExtension);
 
-  addSimMenu(app, mainMenu);
-
   addSimSetupCreateButton(app, mosaikExtension, fileBrowser);
 
   addSimTab(app, mosaikExtension, restorer);
+
+  if (mainMenu) {
+    addSimMenu(app, mainMenu);
+  }
+
+  if (launcher) {
+    addLauncherItems(app, launcher);
+  }
 
   return Promise.resolve(mosaikExtension);
 }
