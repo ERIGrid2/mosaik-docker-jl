@@ -2,6 +2,10 @@ import { LabIcon } from '@jupyterlab/ui-components';
 
 import buttonSimSetupCreateSvgStr from '../../style/images/mosaik-button-sim-setup-create.svg';
 import mosaikDockerSvgStr from '../../style/images/mosaik-docker.svg';
+import mosaikDockerLauncherSvgStr from '../../style/images/mosaik-docker-launcher.svg';
+import mosaikDockerCliSvgStr from '../../style/images/mosaik-docker-cli.svg';
+import mosaikDockerJlSvgStr from '../../style/images/mosaik-docker-jl.svg';
+import mosaikDockerPySvgStr from '../../style/images/mosaik-docker-py.svg';
 import simSetupBuildSvgStr from '../../style/images/mosaik-sim-setup-build.svg';
 import simSetupCheckSvgStr from '../../style/images/mosaik-sim-setup-check.svg';
 import simSetupDeleteSvgStr from '../../style/images/mosaik-sim-setup-delete.svg';
@@ -21,6 +25,26 @@ export const buttonSimSetupCreateIcon = new LabIcon({
 export const mosaikDockerIcon = new LabIcon({
   name: 'ui-components:mosaik-docker',
   svgstr: mosaikDockerSvgStr
+});
+
+export const mosaikDockerLauncherIcon = new LabIcon({
+  name: 'ui-components:mosaik-docker-launcher',
+  svgstr: mosaikDockerLauncherSvgStr
+});
+
+export const mosaikDockerCliIcon = new LabIcon({
+  name: 'ui-components:mosaik-docker-cli',
+  svgstr: mosaikDockerCliSvgStr
+});
+
+export const mosaikDockerJlIcon = new LabIcon({
+  name: 'ui-components:mosaik-docker-jl',
+  svgstr: mosaikDockerJlSvgStr
+});
+
+export const mosaikDockerPyIcon = new LabIcon({
+  name: 'ui-components:mosaik-docker-py',
+  svgstr: mosaikDockerPySvgStr
 });
 
 export const simSetupBuildIcon = new LabIcon({
