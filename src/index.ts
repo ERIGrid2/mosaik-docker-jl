@@ -12,6 +12,8 @@ import { ILauncher } from '@jupyterlab/launcher';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
 
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
+
 import { IMosaikExtension } from './tokens';
 
 import { MosaikExtension } from './model';
@@ -30,8 +32,8 @@ import { addSimTab } from './widgets/sim-tab';
  * Initialization data for the mosaik-docker-jl extension.
  */
 const extension: JupyterFrontEndPlugin<IMosaikExtension> = {
-  id: 'mosaik-docker-jl',
-  requires: [IFileBrowserFactory],
+  id: '@jupyterlab/mosaik-docker-jl:extension',
+  requires: [IFileBrowserFactory, ISettingRegistry],
   optional: [ILauncher, ILayoutRestorer, IMainMenu],
   provides: IMosaikExtension,
   activate: activateExtension,
@@ -43,12 +45,22 @@ export default extension;
 async function activateExtension(
   app: JupyterFrontEnd,
   fileBrowserFactory: IFileBrowserFactory,
+  settingRegistry: ISettingRegistry,
   launcher: ILauncher | null,
   restorer: ILayoutRestorer | null,
   mainMenu: IMainMenu | null
 ): Promise<IMosaikExtension> {
   // Get a reference to the default file browser extension
   const fileBrowser = fileBrowserFactory.defaultBrowser;
+
+  let settings: ISettingRegistry.ISettings;
+  try {
+    settings = await settingRegistry.load(extension.id);
+  } catch (error) {
+    console.error(
+      `Failed to load settings for the mosaik-docker-jl extension.\n${error}`
+    );
+  }
 
   const mosaikExtension = new MosaikExtension({ app, fileBrowser, restorer });
 
@@ -80,7 +92,7 @@ async function activateExtension(
   }
 
   if (launcher) {
-    addLauncherItems(app, launcher);
+    addLauncherItems(app, launcher, settings);
   }
 
   return Promise.resolve(mosaikExtension);

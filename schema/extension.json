@@ -1,0 +1,33 @@
+{
+  "jupyter.lab.setting-icon": "ui-components:mosaik-docker",
+  "jupyter.lab.setting-icon-label": "JupyterLab mosaik-docker",
+  "title": "JupyterLab mosaik-docker",
+  "description": "JupyterLab mosaik-docker extension settings.",
+  "type": "object",
+  "properties": {
+    "mosaikDockerDocsUrl": {
+      "type": "string",
+      "title": "mosaik-docker documentation URL",
+      "description": "URL to the (external) documentation for the mosaik-docker package. This URL will be opened in a new window by the correponding item in the launcher.",
+      "default": "https://github.com/ERIGrid2/mosaik-docker"
+    },
+    "mosaikDockerJLDocsUrl": {
+      "type": "string",
+      "title": "JupyterLab mosaik-docker extension documentation URL",
+      "description": "URL to the (external) documentation for the mosaik-docker-jl package. This URL will be opened in a new window by the correponding item in the launcher.",
+      "default": "https://github.com/ERIGrid2/mosaik-docker-jl"
+    },
+    "mosaikDockerCliDocsUrl": {
+      "type": "string",
+      "title": "mosaik-docker CLI documentation URL",
+      "description": "URL to the (external) documentation for the mosaik-docker CLI. This URL will be opened in a new window by the correponding item in the launcher.",
+      "default": "https://github.com/ERIGrid2/mosaik-docker"
+    },
+    "mosaikDockerPyDocsUrl": {
+      "type": "string",
+      "title": "mosaik-docker Python module documentation URL",
+      "description": "URL to the (external) documentation for the mosaik-docker Python module. This URL will be opened in a new window by the correponding item in the launcher.",
+      "default": "https://github.com/ERIGrid2/mosaik-docker"
+    }
+  }
+}
