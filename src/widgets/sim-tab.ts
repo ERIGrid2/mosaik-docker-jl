@@ -14,30 +14,44 @@ import { VirtualDOM, VirtualElement } from '@lumino/virtualdom';
 
 import { CommandPalette, Widget } from '@lumino/widgets';
 
-import { IMosaikExtension } from '../tokens';
+import { IMosaikDockerExtension } from '../tokens';
 
 import { CommandIDs } from '../command-ids';
 
 import { mosaikDockerIcon } from '../style/icons';
 
 export namespace CommandItem {
+  /** Define the initialization options for class CommandItem. */
   export interface IOptions extends CommandPalette.IItemOptions {
+    /** JupyterLab command registry. */
     commands: CommandRegistry;
   }
 }
 
 /**
  * A concrete implementation of `CommandPalette.IItem`.
+ * Intended for use with class SimCommandTab.
  */
 export class CommandItem implements CommandPalette.IItem {
   /**
    * Construct a new command item.
+   * @param options - command item initialization options
+   * @returns command item instance
    */
   constructor(options: CommandItem.IOptions) {
+    // Store a reference to the JupyterLab command registry.
     this._commands = options.commands;
+
+    // Set the command category.
     this.category = this._normalizeCategory(options.category);
+
+    // Set the command.
     this.command = options.command;
+
+    // Optional: store command arguments.
     this.args = options.args || JSONExt.emptyObject;
+
+    // Optional: set command display rank.
     this.rank = options.rank !== undefined ? options.rank : Infinity;
   }
 
@@ -82,7 +96,6 @@ export class CommandItem implements CommandPalette.IItem {
    * The icon class for the command item.
    */
   get iconClass(): string {
-    //return this._commands.iconClass( this.command, this.args );
     return 'jp-SideTab-itemIcon';
   }
 
@@ -150,54 +163,62 @@ export class CommandItem implements CommandPalette.IItem {
     return category.trim().replace(/\s+/g, ' ');
   }
 
+  /** Reference to JupyterLab command registry. */
   private _commands: CommandRegistry;
 }
 
 export namespace SimCommandTab {
+  /** Define the initialization options for class SimCommandTab. */
   export interface IOptions {
-    /**
-     * The command registry for use with the command side bar tab.
-     */
+    /** The command registry for use with the command side bar tab. */
     commands: CommandRegistry;
 
-    /**
-     * The category for use with the command side bar tab.
-     */
+    /** The category for use with the command side bar tab. */
     category: string;
 
-    /**
-     * A custom renderer for use with the command side bar tab.
-     *
-     * The default is a shared renderer instance.
-     */
+    /** A custom renderer for use with the command side bar tab. */
     renderer: CommandPalette.IRenderer;
 
-    model: IMosaikExtension;
+    /** mosaik-docker extension model. */
+    model: IMosaikDockerExtension;
   }
 }
 
 /**
- * A widget which displays command items in a side bar tab.
+ * This widget displays the mosaik-docker commands in a side bar tab.
  */
 export class SimCommandTab extends Widget {
   /**
    * Construct a new command side bar tab.
-   *
    * @param options - The options for initializing the side bar tab.
+   * @returns widget instance
    */
   constructor(options: SimCommandTab.IOptions) {
-    super({ node: Private.createNode() });
+    super({ node: SimCommandTab._createNode() });
 
-    // Reuse style from CommandPalette.
+    // Set title icon.
+    this.title.icon = mosaikDockerIcon;
+
+    // Set title caption.
+    this.title.caption = 'Mosaik Commands';
+
+    // Reuse CSS class from CommandPalette.
     this.addClass('lm-CommandPalette');
 
+    // Set CSS id.
+    this.id = 'mosaik-docker-sim-tab';
+
+    // Save reference to JupyterLab commands registry.
     this.commands = options.commands;
 
-    options.model.stateChanged.connect(this.update, this);
-
+    // Set renderer.
     this.renderer = options.renderer || CommandPalette.defaultRenderer;
 
+    // Set category (only one category for all commands).
     this._category = options.category;
+
+    // Connect the widget's update method to changes of the mosaik-extension model.
+    options.model.modelChanged.connect(this.update, this);
   }
 
   /**
@@ -245,10 +266,8 @@ export class SimCommandTab extends Widget {
 
   /**
    * Add a command item to the command side bar tab.
-   *
-   * @param options - The options for creating the command item.
-   *
-   * @returns The command item added to the side bar tab.
+   * @param options - options for creating the command item
+   * @returns The command item added to the side bar tab
    */
   addItem(command: string): CommandPalette.IItem {
     const category = this._category;
@@ -269,7 +288,6 @@ export class SimCommandTab extends Widget {
 
   /**
    * Handle the DOM events for the command side bar tab.
-   *
    * @param event - The DOM event sent to the command side bar tab.
    *
    * #### Notes
@@ -323,6 +341,7 @@ export class SimCommandTab extends Widget {
 
   /**
    * Handle the `'click'` event for the command side bar tab.
+   * @param event - mouse event
    */
   private _evtClick(event: MouseEvent): void {
     // Bail if the click is not the left button.
@@ -350,6 +369,7 @@ export class SimCommandTab extends Widget {
 
   /**
    * Execute the command item at the given index, if possible.
+   * @param index - position index of command in the side tab
    */
   private _execute(index: number): void {
     const item = this._items[index];
@@ -370,18 +390,12 @@ export class SimCommandTab extends Widget {
     this.update();
   }
 
-  private _category: string;
-  private _items: CommandPalette.IItem[] = [];
-}
-
-/**
- * The namespace for the module implementation details.
- */
-namespace Private {
   /**
    * Create the DOM node for a command side bar tab.
+   * @private
+   * @returns HTML div element
    */
-  export function createNode(): HTMLDivElement {
+  private static _createNode(): HTMLDivElement {
     const node = document.createElement('div');
     const header = document.createElement('div');
     const content = document.createElement('ul');
@@ -391,28 +405,46 @@ namespace Private {
     node.appendChild(content);
     return node;
   }
+
+  /** The (only) command tab category. */
+  private _category: string;
+
+  /** Array of command palette items. */
+  private _items: CommandPalette.IItem[] = [];
 }
 
+/**
+ * Add new side tab for displaying mosaik-docker commands
+ * @param app - JupyterLab frontend
+ * @param model - mosaik-docker extension model
+ * @param restorer - JupyterLab layout restorer
+ */
 export function addSimTab(
   app: JupyterFrontEnd,
-  model: IMosaikExtension,
+  model: IMosaikDockerExtension,
   restorer: ILayoutRestorer | null
 ): void {
+  // Retrieve JupyterLab command registry and shell.
   const { commands, shell } = app;
+
+  // Specify side tab category.
   const category = 'mosaik-docker Commands';
+
+  // Specify side tab renderer (re-use renderer from CommandPaletteSvg).
   const renderer = CommandPaletteSvg.defaultRenderer;
 
+  // Instantiate new side tab.
   const simTab = new SimCommandTab({ commands, category, renderer, model });
-  simTab.id = 'mosaik-docker-sim-tab';
-  simTab.title.icon = mosaikDockerIcon;
-  simTab.title.caption = 'Mosaik Commands';
 
+  // Add mosaik-docker commands to side tab.
   CommandIDs.all.forEach(command => {
     simTab.addItem(command);
   });
 
+  // Add new side tab to JupyterLab shell.
   shell.add(simTab, 'left', { rank: 300 });
 
+  // If available, add the widget to the layout restorer.
   if (restorer) {
     restorer.add(simTab, 'sim-tab');
   }

@@ -1,5 +1,8 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 
+// This file imports all the icons used by the extension as type LabIcon.
+// The icons are stored as SVG files.
+
 import buttonSimSetupCreateSvgStr from '../../style/images/mosaik-button-sim-setup-create.svg';
 import mosaikDockerSvgStr from '../../style/images/mosaik-docker.svg';
 import mosaikDockerLauncherSvgStr from '../../style/images/mosaik-docker-launcher.svg';

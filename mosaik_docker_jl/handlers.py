@@ -10,7 +10,7 @@ import tornado
 
 class ExeHandler( APIHandler ):
     '''
-    Top-level parent class.
+    Top-level parent class for execution handlers.
     '''
 
     @property

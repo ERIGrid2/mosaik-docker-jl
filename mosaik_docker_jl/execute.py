@@ -1,8 +1,7 @@
 '''
-Module for executing git commands, sending results back to the handlers
+Module for executing commands, sending results back to the handlers
 '''
 import os
-#from subprocess import Popen, PIPE
 from ._version import __version__
 
 from mosaik_docker.cli.create_sim_setup import create_sim_setup as md_create_sim_setup

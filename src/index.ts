@@ -14,9 +14,9 @@ import { IMainMenu } from '@jupyterlab/mainmenu';
 
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
-import { IMosaikExtension } from './tokens';
+import { IMosaikDockerExtension } from './tokens';
 
-import { MosaikExtension } from './model';
+import { MosaikDockerExtension } from './model';
 
 import { addCommands } from './commands';
 
@@ -31,17 +31,23 @@ import { addSimTab } from './widgets/sim-tab';
 /**
  * Initialization data for the mosaik-docker-jl extension.
  */
-const extension: JupyterFrontEndPlugin<IMosaikExtension> = {
+const extension: JupyterFrontEndPlugin<IMosaikDockerExtension> = {
   id: '@jupyterlab/mosaik-docker-jl:extension',
   requires: [IFileBrowserFactory, ISettingRegistry],
   optional: [ILauncher, ILayoutRestorer, IMainMenu],
-  provides: IMosaikExtension,
+  provides: IMosaikDockerExtension,
   activate: activateExtension,
   autoStart: true
 };
 
+/**
+ * Export the extension as default.
+ */
 export default extension;
 
+/**
+ * Function invoked to activate the extension.
+ */
 async function activateExtension(
   app: JupyterFrontEnd,
   fileBrowserFactory: IFileBrowserFactory,
@@ -49,10 +55,11 @@ async function activateExtension(
   launcher: ILauncher | null,
   restorer: ILayoutRestorer | null,
   mainMenu: IMainMenu | null
-): Promise<IMosaikExtension> {
+): Promise<IMosaikDockerExtension> {
   // Get a reference to the default file browser extension
   const fileBrowser = fileBrowserFactory.defaultBrowser;
 
+  // Attempt to load the extension settings.
   let settings: ISettingRegistry.ISettings;
   try {
     settings = await settingRegistry.load(extension.id);
@@ -62,10 +69,13 @@ async function activateExtension(
     );
   }
 
-  const mosaikExtension = new MosaikExtension({ app, fileBrowser, restorer });
+  // Initialize the model for interacting with the mosaik-docker package.
+  const mde = new MosaikDockerExtension({ app, fileBrowser, restorer });
 
+  // Attempt to retrieve the extension's version.
+  // Use this to check if the server extension is running.
   try {
-    const version = await mosaikExtension.getVersion();
+    const version = await mde.getVersion();
     console.log(
       `[mosaik-docker-jl] JupyterLab extension activated, version = ${
         version.version
@@ -81,19 +91,24 @@ async function activateExtension(
     );
   }
 
-  addCommands(app, mosaikExtension);
+  // Make the extension's functionality available as JupyterLab commands.
+  addCommands(app, mde, settings);
 
-  addSimSetupCreateButton(app, mosaikExtension, fileBrowser);
+  // Add a button for creating sim setups to the file browser tab.
+  addSimSetupCreateButton(app, mde, fileBrowser);
 
-  addSimTab(app, mosaikExtension, restorer);
+  // Make the extension's functionality available via a dedicated side tab.
+  addSimTab(app, mde, restorer);
 
+  // Make the extension's functionality available via a dedicated menu tab.
   if (mainMenu) {
     addSimMenu(app, mainMenu);
   }
 
+  // Add links to documentation to the laucher menu.
   if (launcher) {
-    addLauncherItems(app, launcher, settings);
+    addLauncherItems(app, launcher);
   }
 
-  return Promise.resolve(mosaikExtension);
+  return Promise.resolve(mde);
 }

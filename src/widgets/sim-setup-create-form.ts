@@ -1,38 +1,57 @@
 import { Widget } from '@lumino/widgets';
 
+/**
+ * This widget displays a dialog that lets users enter the name
+ * of a new simulation setup. This dialog is used by the command
+ * for creating new simulation setups.
+ */
 export class SimSetupCreateForm extends Widget {
   /**
-   * Create a redirect form.
+   * Returns an instance of the SimSetupCreateForm class.
+   * @returns widget instance
    */
   constructor() {
-    super({ node: SimSetupCreateForm.createFormNode() });
+    super({ node: SimSetupCreateForm._createFormNode() });
   }
 
-  private static createFormNode(): HTMLElement {
+  /**
+   * Create the HTML element for the widget.
+   * @private
+   * @returns HTML element
+   */
+  private static _createFormNode(): HTMLElement {
+    // Create HTML elements.
     const node = document.createElement('div');
-    const label = document.createElement('label');
     const input = document.createElement('input');
     const text = document.createElement('span');
 
+    // Set CSS class name.
     node.className = 'jp-RedirectForm';
+
+    // Set display text.
     text.textContent =
       'Enter the name of the new mosaik-docker simulation setup:';
+
+    // Set placeholder for input field.
     input.placeholder = SimSetupCreateForm._defaultSetupName;
 
-    label.appendChild(text);
-    label.appendChild(input);
-    node.appendChild(label);
+    // Define structure of HTML elements.
+    node.appendChild(text);
+    node.appendChild(input);
+
     return node;
   }
 
   /**
-   * Returns the input value.
+   * Returns the input value (using the placeholder value as default).
    */
   getValue(): string {
+    // Retrieve input field.
     const value = this.node.querySelector('input').value;
+    // Return user input or defaul value.
     return value === '' ? SimSetupCreateForm._defaultSetupName : value;
   }
 
-  /// Default value for sim setup (also used as placeholder in the widget).
+  /** Default value for simulation setup name (also used as placeholder in the widget). */
   private static _defaultSetupName = 'mosaik-docker-sim';
 }

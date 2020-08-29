@@ -4,40 +4,66 @@ import { ReactWidget, showErrorMessage } from '@jupyterlab/apputils';
 
 import { Widget } from '@lumino/widgets';
 
-import { IMosaikExtension, MosaikDockerSim } from '../tokens';
+import { IMosaikDockerExtension, MosaikDocker } from '../tokens';
 
 import { simSetupConfigIcon } from '../style/icons';
 
 export namespace SimSetupConfigureWidget {
+  /** Initialization options for SimSetupConfigureWidget class. */
   export interface IOptions extends Widget.IOptions {
-    model: IMosaikExtension;
-    configData: MosaikDockerSim.IConfigData;
+    /** mosaik-docker extension model. */
+    model: IMosaikDockerExtension;
+
+    /** Simulation setup configuration data. */
+    configData: MosaikDocker.IConfigData;
   }
 
+  /** Initialization options for SimSetupConfigureComponent class. */
   export interface IComponentProperties {
-    model: IMosaikExtension;
+    /** mosaik-docker extension model. */
+    model: IMosaikDockerExtension;
+
+    /** Instance of simulation setup configuration widget. */
     widget: SimSetupConfigureWidget;
-    configData: MosaikDockerSim.IConfigData;
+
+    /** Simulation setup configuration data. */
+    configData: MosaikDocker.IConfigData;
   }
 }
 
+/**
+ * This class implements a main area widget (React widget)
+ * for configuring a simulation setup.
+ */
 export class SimSetupConfigureWidget extends ReactWidget {
   /**
-   * Create a redirect form.
+   * Create an instance of the widget.
+   * @param options - widget initialization options
+   * @returns widget instance
    */
   constructor(options: SimSetupConfigureWidget.IOptions) {
     super(options);
 
+    // Define CSS id.
     this.id = 'mosaik-docker-sim-setup-config';
+
+    // Set widget title icon.
     this.title.icon = simSetupConfigIcon;
+
+    // Set widget title label.
     this.title.label = 'Sim Setup Configuration';
+
+    // Make widget closable.
     this.title.closable = true;
 
     this._model = options.model;
     this._configData = options.configData;
   }
 
-  /// Render the widget.
+  /**
+   * Render the widget.
+   * @returns React widget
+   */
   render(): React.ReactElement {
     return (
       <SimSetupConfigureComponent
@@ -48,7 +74,12 @@ export class SimSetupConfigureWidget extends ReactWidget {
     );
   }
 
-  getConfigData(): MosaikDockerSim.IOrchestratorConfigData {
+  /**
+   * Retrieve the configuration data specified by the user.
+   * @returns simulation setup configuration
+   */
+  getConfigData(): MosaikDocker.IOrchestratorConfigData {
+    // Retrieve HTML input fields.
     const inputNodesList = this.node.querySelectorAll('input');
 
     return {
@@ -60,20 +91,35 @@ export class SimSetupConfigureWidget extends ReactWidget {
     };
   }
 
-  private _model: IMosaikExtension;
-  private _configData: MosaikDockerSim.IConfigData;
+  /** mosaik-docker extension model. */
+  private _model: IMosaikDockerExtension;
+
+  /** Initial simulation setup configuration data. */
+  private _configData: MosaikDocker.IConfigData;
 }
 
+/**
+ * This class implements the React component for class SimSetupConfigureWidget.
+ */
 export class SimSetupConfigureComponent extends React.Component<
   SimSetupConfigureWidget.IComponentProperties
 > {
-  /// Constructor.
+  /**
+   * Create an instance of the widget's React component.
+   * @param props - React component properties
+   * @returns React component instance
+   */
   constructor(props: SimSetupConfigureWidget.IComponentProperties) {
     super(props);
     this._simSetupDir = this.props.model.simSetupRoot;
   }
 
+  /**
+   * Render the React element.
+   * @returns React element
+   */
   render(): React.ReactElement {
+    // Retrieve the initial configuration data.
     const { orchestrator } = this.props.configData;
     const scenarioFile = orchestrator.scenarioFile;
     const dockerFile = orchestrator.dockerFile;
@@ -81,6 +127,7 @@ export class SimSetupConfigureComponent extends React.Component<
     const extraDirs = orchestrator.extraDirs.join(', ');
     const results = orchestrator.results.join(', ');
 
+    // Define the HTML structure of the widget (header, input fields and update button).
     return (
       <div className="jp-Widget">
         <div className="jp-Content">
@@ -137,5 +184,6 @@ export class SimSetupConfigureComponent extends React.Component<
     );
   }
 
+  /** Path to the simulation setup root directory. */
   private _simSetupDir: string;
 }
