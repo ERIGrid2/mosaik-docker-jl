@@ -1,6 +1,6 @@
 # mosaik-docker-jl
 
-<!--- ![Github Actions Status](https://github.com/ERIGrid2/mosaik-docker-jl/workflows/Build/badge.svg) --->
+![Github Actions Status](https://github.com/ERIGrid2/mosaik-docker-jl/workflows/Build/badge.svg)
 
 A JupyterLab extension for executing co-simulations based on the [mosaik framework](https://mosaik.offis.de/) and [Docker](https://docs.docker.com/).
 
@@ -45,8 +45,8 @@ jupyter lab build
 
 ### Install
 
-The `jlpm` command is JupyterLab's pinned version of
-[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use `yarn` or `npm` in lieu of `jlpm` below.
+The `jlpm` command is JupyterLab's pinned version of [yarn](https://yarnpkg.com/) that is installed with JupyterLab.
+You may use `yarn` or `npm` in lieu of `jlpm` below.
 
 ```bash
 # Clone the repo to your local environment
@@ -82,8 +82,6 @@ jupyter lab --watch
 ### Uninstall
 
 ```bash
-
 pip uninstall mosaik_docker_jl
-
 jupyter labextension uninstall mosaik-docker-jl
 ```
