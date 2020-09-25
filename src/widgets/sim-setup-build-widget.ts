@@ -43,7 +43,7 @@ export class SimSetupBuildWidget extends MainAreaWidget {
     // Define and append header element.
     const statusHeader = document.createElement('span');
     statusHeader.className = 'jp-Widget-header';
-    statusHeader.innerText = `Simulation setup location: ${
+    statusHeader.innerHTML = `Simulation setup location: ${
       options.simSetupDir
     }`;
     this.content.node.appendChild(statusHeader);
@@ -65,7 +65,7 @@ export class SimSetupBuildWidget extends MainAreaWidget {
    * @param statusUpdate - JSON object
    */
   async updateStatus(statusUpdate: JSONObject): Promise<void> {
-    this._statusContent.innerText += statusUpdate['out'] + '\n';
+    this._statusContent.innerHTML += statusUpdate['out'] + '<br>';
   }
 
   /**
@@ -75,7 +75,7 @@ export class SimSetupBuildWidget extends MainAreaWidget {
    */
   async done(statusDone?: JSONObject): Promise<void> {
     if (statusDone !== undefined) {
-      this._statusContent.innerText += '\n' + statusDone['done'];
+      this._statusContent.innerHTML += '<br>' + statusDone['done'];
     }
     this.content.node.removeChild(this._statusContentSpinner);
   }
