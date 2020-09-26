@@ -32,7 +32,7 @@ import { addSimTab } from './widgets/sim-tab';
  * Initialization data for the mosaik-docker-jl extension.
  */
 const extension: JupyterFrontEndPlugin<IMosaikDockerExtension> = {
-  id: '@jupyterlab/mosaik-docker-jl:extension',
+  id: '@jupyterlab/mosaik-docker-jl:plugin',
   requires: [IFileBrowserFactory, ISettingRegistry],
   optional: [ILauncher, ILayoutRestorer, IMainMenu],
   provides: IMosaikDockerExtension,

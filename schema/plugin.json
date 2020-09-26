@@ -9,25 +9,25 @@
       "type": "string",
       "title": "mosaik-docker documentation URL",
       "description": "URL to the (external) documentation for the mosaik-docker package. This URL will be opened in a new window by the correponding item in the launcher.",
-      "default": "https://github.com/ERIGrid2/mosaik-docker"
+      "default": "https://mosaik-docker.readthedocs.io/en/latest/usage.html"
     },
     "mosaikDockerJLDocsUrl": {
       "type": "string",
       "title": "JupyterLab mosaik-docker extension documentation URL",
       "description": "URL to the (external) documentation for the mosaik-docker-jl package. This URL will be opened in a new window by the correponding item in the launcher.",
-      "default": "https://github.com/ERIGrid2/mosaik-docker-jl"
+      "default": "https://mosaik-docker.readthedocs.io/projects/jupyter/en/latest/usage.html"
     },
     "mosaikDockerCliDocsUrl": {
       "type": "string",
       "title": "mosaik-docker CLI documentation URL",
       "description": "URL to the (external) documentation for the mosaik-docker CLI. This URL will be opened in a new window by the correponding item in the launcher.",
-      "default": "https://github.com/ERIGrid2/mosaik-docker"
+      "default": "https://mosaik-docker.readthedocs.io/en/latest/cli-reference.html"
     },
     "mosaikDockerPyDocsUrl": {
       "type": "string",
       "title": "mosaik-docker Python module documentation URL",
       "description": "URL to the (external) documentation for the mosaik-docker Python module. This URL will be opened in a new window by the correponding item in the launcher.",
-      "default": "https://github.com/ERIGrid2/mosaik-docker"
+      "default": "https://mosaik-docker.readthedocs.io/en/latest/cli-reference.html"
     }
   }
 }
