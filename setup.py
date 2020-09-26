@@ -12,23 +12,21 @@ import setuptools
 HERE = os.path.abspath( os.path.dirname( __file__ ) )
 
 # The name of the project
-name = 'mosaik_docker_jl'
+name = 'mosaik-docker-jl'
+pkg_name = 'mosaik_docker_jl'
 
 # Ensure a valid python version
 ensure_python( '>=3.5' )
 
 # Get our version
-version = get_version( os.path.join( name, '_version.py' ) )
+version = get_version( os.path.join( pkg_name, '_version.py' ) )
 
-lab_path = os.path.join( HERE, name, 'labextension' )
 
-# Representative files that should exist after a successful build
-jstargets = [
-    os.path.join( HERE, 'lib', 'mosaik-docker-jl.js' ),
-]
+lab_path = os.path.join( HERE, pkg_name, 'labextension' )
+
 
 package_data_spec = {
-    name: [
+    pkg_name: [
         '*'
     ]
 }
@@ -38,38 +36,54 @@ data_files_spec = [
     ( 'etc/jupyter/jupyter_notebook_config.d', 'jupyter-config', 'mosaik_docker_jl.json' ),
 ]
 
-cmdclass = create_cmdclass( 'jsdeps', 
-    package_data_spec = package_data_spec,
-    data_files_spec = data_files_spec
-)
+if ( os.path.isfile( os.path.join( HERE, 'package.json' ) ) ):
+    # Representative files that should exist after a successful build
+    jstargets = [
+        os.path.join( HERE, 'lib', 'mosaik-docker-jl.js' ),
+    ]
 
-cmdclass[ 'jsdeps' ] = combine_commands(
-    install_npm( HERE, build_cmd = 'build:all', npm = ['jlpm'] ),
-    ensure_targets( jstargets ),
-)
+    cmdclass = create_cmdclass(
+        'jsdeps', 
+        package_data_spec = package_data_spec,
+        data_files_spec = data_files_spec
+    )
 
-with open( 'README.md', 'r' ) as fh:
-    long_description = fh.read()
+    cmdclass[ 'jsdeps' ] = combine_commands(
+        install_npm( HERE, build_cmd = 'build:all', npm = ['jlpm'] ),
+        ensure_targets( jstargets ),
+    )
+else:
+    cmdclass = create_cmdclass(
+        package_data_spec = package_data_spec,
+        data_files_spec = data_files_spec
+    )
+
+cmdclass.pop('develop')
+
+
+# Read long description from file (reStructuredText syntax). Will be parsed and displayed as HTML online.
+with open( 'description.rst' ) as description_file:
+    long_description = description_file.read()
 
 setup_args = dict(
     name = name,
     version = version,
-    url = 'https://github.com/ERIGrid2/mosaik-docker-jl',
-    author = 'Edmund Widl',
+    maintainer = 'ERIGrid 2.0 development team',
+    maintainer_email = 'edmund.widl@ait.ac.at',
+    url = 'https://mosaik-docker.readthedocs.io/projects/jupyter/',
     description = 'A JupyterLab extension for executing co-simulations based on the mosaik framework and Docker.',
     long_description = long_description,
-    long_description_content_type = 'text/markdown',
     cmdclass = cmdclass,
     packages = setuptools.find_packages(),
     install_requires = [
         'jupyterlab>=2.0',
         'ipykernel',
-        'mosaik-docker@git+https://github.com/ERIGrid2/mosaik-docker.git'
+        'mosaik-docker>=0.1.1'
     ],
     zip_safe = False,
     include_package_data = True,
     license = 'BSD-3-Clause',
-    platforms = 'Linux, Mac OS X, Windows',
+    platforms = [ 'any' ],
     keywords = ['Jupyter', 'JupyterLab', 'mosaik', 'mosaik-docker'],
     classifiers = [
         'Programming Language :: Python :: 3',

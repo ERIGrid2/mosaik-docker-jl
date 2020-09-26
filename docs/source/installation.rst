@@ -10,7 +10,7 @@ Install
 
 .. code-block:: bash
 
-    pip install mosaik_docker_jl
+    pip install mosaik-docker-jl
     jupyter lab build
 
 Troubleshoot

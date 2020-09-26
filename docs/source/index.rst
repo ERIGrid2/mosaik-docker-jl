@@ -34,10 +34,3 @@ Find information about how to use the mosaik-docker JupyterLab package :doc:`her
    :caption: Usage
 
    /usage
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

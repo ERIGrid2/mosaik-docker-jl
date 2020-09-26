@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab/mosaik-docker-jl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A JupyterLab extension for executing co-simulations based on the mosaik framework and Docker.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -30,7 +30,7 @@
   },
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "schema/**/*.{json,}",
+    "schema/*.json",
     "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
   ],
   "sideEffects": [
