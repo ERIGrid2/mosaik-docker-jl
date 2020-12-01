@@ -6,23 +6,6 @@ Welcome to the mosaik-docker JupyterLab extension!
 
 A `JupyterLab <https://jupyter.org/>`_ extension for executing co-simulations based on the `mosaik framework <https://mosaik.offis.de/>`_ and `Docker <https://docs.docker.com/>`_.
 
-This extension comprises:
-
-* a Python package called ``mosaik_docker_jl`` for the server extension
-* an NPM package called ``mosaik-docker-jl`` for the frontend extension.
-
-Installation
-------------
-
-Find information about the requirements and the installation of the mosaik-docker JupyterLab extension :doc:`here <installation>`.
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-   :caption: Installation
-
-   /installation
-
 Usage
 -----
 
@@ -34,3 +17,20 @@ Find information about how to use the mosaik-docker JupyterLab package :doc:`her
    :caption: Usage
 
    /usage
+
+Installation
+------------
+
+This extension comprises:
+
+* a Python package called ``mosaik_docker_jl`` for the server extension
+* an NPM package called ``mosaik-docker-jl`` for the frontend extension.
+
+Find information about the requirements and the installation of the mosaik-docker JupyterLab extension :doc:`here <installation>`.
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Installation
+
+   /installation

@@ -1,17 +1,39 @@
 Requirements
 ============
 
-* JupyterLab >= 2.0
+You will need `Python <https://python.org>`_ (tested with version >= 3.6) and `NodeJS <https://nodejs.org/en/>`_ to install the extension.
+For the extension to work properly, you will also need a working installation of `Docker Engine <https://docs.docker.com/engine/install/>`_.
 
-Install
-=======
+Installation (standalone)
+=========================
 
-**Note**: You will need NodeJS to install the extension.
+The package is available via the official `Python Package Index <https://pypi.org/project/mosaik-docker-jl/>`_.
+Install it from the command line:
 
 .. code-block:: bash
 
     pip install mosaik-docker-jl
     jupyter lab build
+
+
+Installation (JupyterHub)
+=========================
+
+JupyterHub distributions (e.g., `The Littlest JupyterHub <https://tljh.jupyter.org/>`_) already come with NodeJS installed.
+However, `Docker Engine <https://docs.docker.com/engine/install/>`_ still needs to be installed from the `JupyterHub administrator terminal <https://tljh.jupyter.org/en/latest/howto/env/user-environment.html#installing-apt-packages>`_ using the ``sudo -E``.
+From there, also the extension needs to be installed:
+
+.. code-block:: bash
+
+    sudo -E pip install mosaik-docker-jl
+    sudo -E jupyter lab build
+
+Each new JupyterHub user also has to be explicitly added to the group ``docker``:
+
+.. code-block:: bash
+
+    tljh-config add-item users.extra_user_groups.docker <user-name>
+
 
 Troubleshoot
 ============
@@ -34,6 +56,13 @@ If it is installed, try:
 
     jupyter lab clean
     jupyter lab build
+
+In case you get error messages similar to the following one:
+
+..
+	Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/containers/json: dial unix /var/run/docker.sock: connect: permission denied
+
+Check if the user has been `added to group <https://docs.docker.com/engine/install/linux-postinstall/>`_ ``docker``.
 
 Development
 ===========
@@ -80,5 +109,6 @@ Uninstall
 
 .. code-block:: bash
 
-    pip uninstall mosaik_docker_jl
+    pip uninstall mosaik-docker-jl
     jupyter labextension uninstall mosaik-docker-jl
+	jupyter lab build
