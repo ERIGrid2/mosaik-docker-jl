@@ -19,15 +19,15 @@
     },
     "mosaikDockerCliDocsUrl": {
       "type": "string",
-      "title": "mosaik-docker CLI documentation URL",
+      "title": "mosaik-docker CLI reference URL",
       "description": "URL to the (external) documentation for the mosaik-docker CLI. This URL will be opened in a new window by the correponding item in the launcher.",
       "default": "https://mosaik-docker.readthedocs.io/en/latest/cli-reference.html"
     },
     "mosaikDockerPyDocsUrl": {
       "type": "string",
-      "title": "mosaik-docker Python module documentation URL",
-      "description": "URL to the (external) documentation for the mosaik-docker Python module. This URL will be opened in a new window by the correponding item in the launcher.",
-      "default": "https://mosaik-docker.readthedocs.io/en/latest/cli-reference.html"
+      "title": "mosaik-docker Python API reference URL",
+      "description": "URL to the (external) documentation for the mosaik-docker Python API. This URL will be opened in a new window by the correponding item in the launcher.",
+      "default": "https://mosaik-docker.readthedocs.io/en/latest/api-reference.html"
     }
   }
 }
