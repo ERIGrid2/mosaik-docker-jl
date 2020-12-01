@@ -72,7 +72,7 @@ export class SimSetupCreateButton extends ToolbarButton {
           });
         }
       },
-      tooltip: 'Create Simulation Environment'
+      tooltip: 'Create Simulation Setup'
     });
   }
 }
