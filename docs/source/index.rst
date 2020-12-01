@@ -1,5 +1,6 @@
+**************************************************
 Welcome to the mosaik-docker JupyterLab extension!
-==================================================
+**************************************************
 
 .. meta::
    :description lang=en: Use the mosaik co-simulation framework from JupyterLab.
@@ -7,7 +8,7 @@ Welcome to the mosaik-docker JupyterLab extension!
 A `JupyterLab <https://jupyter.org/>`_ extension for executing co-simulations based on the `mosaik framework <https://mosaik.offis.de/>`_ and `Docker <https://docs.docker.com/>`_.
 
 Usage
------
+=====
 
 Find information about how to use the mosaik-docker JupyterLab package :doc:`here <usage>`.
 
@@ -19,7 +20,7 @@ Find information about how to use the mosaik-docker JupyterLab package :doc:`her
    /usage
 
 Installation
-------------
+============
 
 This extension comprises:
 

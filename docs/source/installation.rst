@@ -1,3 +1,7 @@
+*************************************************
+Installing the mosaik-docker JupyterLab extension
+*************************************************
+
 Requirements
 ============
 

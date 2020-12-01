@@ -1,3 +1,7 @@
+********************************************
+Using the mosaik-docker JupyterLab extension
+********************************************
+
 Overview
 ========
 
@@ -26,7 +30,6 @@ In addition, you can find links to the *mosaik-docker* documentation, this guide
 
 .. image:: img/lab_launcher.png
    :align: center
-   :width: 200 px
    :alt: The mosaik-docker side bar, drop-down menu and documentation links.
 
 
@@ -42,7 +45,6 @@ You have several possibilities to create a new simulation setup:
 
 .. image:: img/lab_browser.png
    :align: center
-   :width: 200 px
    :alt: Button for creating new simulation setups in JupyterLab's file browser.
    
 The new simulation setup will be created in the current working directory.
@@ -51,7 +53,7 @@ When creating a new simulation setup you will be prompted for its name.
 
 .. image:: img/lab_browser_create.png
    :align: center
-   :width: 200 px
+   :width: 400 px
    :alt: alternate text
 
 **NOTE**:
@@ -65,7 +67,6 @@ The JupyterLab environment is also well suited for developing the content of you
 
 .. image:: img/lab_browser_new_setup.png
    :align: center
-   :width: 200 px
    :alt: View of an example simulation setup in JupyterLab.
 
 
@@ -86,7 +87,6 @@ Once you have provided all configuration items, you can save this information vi
 
 .. image:: img/lab_config.png
    :align: center
-   :width: 200 px
    :alt: View of the simulation setup configuration tab.
 
 
@@ -97,7 +97,7 @@ You can use command ``Check Simulation Setup`` to check if your simulation setup
 
 .. image:: img/lab_check.png
    :align: center
-   :width: 200 px
+   :width: 300 px
    :alt: Result of a successfull validity check of a simulation setup.
 
 Once your setup seems to be fine, you can use command ``Build Simulation Setup`` to build the Docker images for running your simulation.
@@ -105,7 +105,6 @@ This will bring up a new tab, on which you can see the output from the Docker im
 
 .. image:: img/lab_build.png
    :align: center
-   :width: 200 px
    :alt: View of the simulation setup build tab.
 
 
@@ -118,7 +117,7 @@ Starting a new simulation will bring up a notification showing its ID.
 
 .. image:: img/lab_sim_start.png
    :align: center
-   :width: 200 px
+   :width: 300 px
    :alt: Starting a new simulation will bring up a notification showing its ID.
 
 Use command ``Check Simulation Status`` to check the status of your simulations.
@@ -126,7 +125,6 @@ This will bring up a new tab listing the running and finished simulations (based
 
 .. image:: img/lab_sim_status.png
    :align: center
-   :width: 200 px
    :alt: View of the simulation status view tab.
 
 Retrieve simulation results
@@ -137,14 +135,14 @@ This will bring up a panel that lets you select to retrieve the results from eit
 
 .. image:: img/lab_sim_get.png
    :align: center
-   :width: 200 px
+   :width: 300 px
    :alt: alternate text
 
 For each selected simulation, the output files specified in the simulation setup configuration (see above) will be copied from the corresponding Docker container and copied to a sub-directory named according to the simulation ID.
 
 .. image:: img/lab_browser_results.png
    :align: center
-   :width: 200 px
+   :width: 500 px
    :alt: Simulations results are copied to individual subfolders.
 
 
