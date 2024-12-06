@@ -44,7 +44,7 @@ export namespace MosaikDockerAPI {
   export async function sendRequest(
     endPoint: string,
     method = 'GET',
-    request: Record<string, any> = null
+    request: Record<string, any> | null = null
   ): Promise<IRequestResponse> {
     // Construct complete request.
     let fullRequest: RequestInit;
@@ -78,7 +78,7 @@ export namespace MosaikDockerAPI {
         settings
       );
     } catch (error) {
-      return Promise.reject(new ServerConnection.NetworkError(error));
+      return Promise.reject(new ServerConnection.NetworkError(TypeError(String(error))));
     }
 
     // Retrieve low-level API response.

@@ -1,11 +1,16 @@
 *.bundle.*
 lib/
 node_modules/
+*.log
+.eslintcache
+.stylelintcache
 *.egg-info/
 .ipynb_checkpoints
 *.tsbuildinfo
+mosaik_docker_jl/labextension
+# Version file is handled by hatchling
+mosaik_docker_jl/_version.py
 
-*/labextension/*.tgz
 # Created by https://www.gitignore.io/api/python
 # Edit at https://www.gitignore.io/?templates=python
 
@@ -56,6 +61,7 @@ htmlcov/
 .coverage.*
 .cache
 nosetests.xml
+coverage/
 coverage.xml
 *.cover
 .hypothesis/
@@ -69,7 +75,7 @@ coverage.xml
 .scrapy
 
 # Sphinx documentation
-docs/build/
+docs/_build/
 
 # PyBuilder
 target/
@@ -107,3 +113,9 @@ dmypy.json
 .pyre/
 
 # End of https://www.gitignore.io/api/python
+
+# OSX files
+.DS_Store
+
+# Yarn cache
+.yarn/

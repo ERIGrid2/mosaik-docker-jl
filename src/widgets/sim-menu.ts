@@ -31,5 +31,5 @@ export function addSimMenu(app: JupyterFrontEnd, mainMenu: IMainMenu): void {
   //});
 
   // Add the mosaik-docker extension menu to the main menu.
-  mainMenu.addMenu(menu, { rank: 60 });
+  mainMenu.addMenu(menu, true, { rank: 60 });
 }

@@ -2,9 +2,8 @@ from ._module_name import __module_name__
 
 import json
 
-from notebook.base.handlers import APIHandler
-from notebook.utils import url_path_join as ujoin
-
+from jupyter_server.base.handlers import APIHandler
+from jupyter_server.utils import url_path_join as ujoin
 import tornado
 
 
@@ -37,6 +36,7 @@ class GetUserHomeDirHandler( ExeHandler ):
         Handler for `get_user_home_dir` command.
         '''
         response = self.exe.get_user_home_dir()
+        self.log.info(f'RESPONSE = {response}')
         self.finish( json.dumps( response ) )
 
 
@@ -340,4 +340,4 @@ def setup_handlers( web_app ):
     handlers = [ ( ujoin( base_url, __module_name__, x[0] ), x[1] ) for x in handlers ]
 
     # Add handlers to main app.
-    web_app.add_handlers( '.*', handlers )
+    web_app.add_handlers( '.*$', handlers )

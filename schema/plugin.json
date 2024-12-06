@@ -1,9 +1,10 @@
 {
-  "jupyter.lab.setting-icon": "ui-components:mosaik-docker",
-  "jupyter.lab.setting-icon-label": "JupyterLab mosaik-docker",
+  "type": "object",
   "title": "JupyterLab mosaik-docker",
   "description": "JupyterLab mosaik-docker extension settings.",
-  "type": "object",
+  "jupyter.lab.shortcuts": [],
+  "jupyter.lab.setting-icon": "ui-components:mosaik-docker",
+  "jupyter.lab.setting-icon-label": "JupyterLab mosaik-docker",
   "properties": {
     "mosaikDockerDocsUrl": {
       "type": "string",
@@ -29,5 +30,6 @@
       "description": "URL to the (external) documentation for the mosaik-docker Python API. This URL will be opened in a new window by the correponding item in the launcher.",
       "default": "https://mosaik-docker.readthedocs.io/en/latest/api-reference.html"
     }
-  }
+  },
+  "additionalProperties": false
 }

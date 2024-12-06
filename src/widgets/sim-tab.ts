@@ -45,6 +45,9 @@ export class CommandItem implements CommandPalette.IItem {
     // Set the command category.
     this.category = this._normalizeCategory(options.category);
 
+    // Set the toggleable flag.
+    this.isToggleable = false;
+
     // Set the command.
     this.command = options.command;
 
@@ -76,6 +79,11 @@ export class CommandItem implements CommandPalette.IItem {
   readonly rank: number;
 
   /**
+   * Flag for toggleable items.
+   */
+  readonly isToggleable: boolean;
+
+  /**
    * The display label for the command item.
    */
   get label(): string {
@@ -87,8 +95,7 @@ export class CommandItem implements CommandPalette.IItem {
    */
   get icon():
     | VirtualElement.IRenderer
-    | undefined /* <DEPRECATED> */
-    | string /* </DEPRECATED> */ {
+    | undefined /* <DEPRECATED> */ {
     return this._commands.icon(this.command, this.args);
   }
 
@@ -323,7 +330,7 @@ export class SimCommandTab extends Widget {
   protected onUpdateRequest(msg: Message): void {
     const header = new Array<VirtualElement>(1);
     const category = this._category;
-    const indices: ReadonlyArray<number> = null;
+    const indices: ReadonlyArray<number> = [];
     header[0] = this.renderer.renderHeader({ category, indices });
 
     VirtualDOM.render(header, this.categoryNode);
@@ -331,7 +338,7 @@ export class SimCommandTab extends Widget {
     const content = new Array<VirtualElement>(this._items.length);
     for (let i = 0, n = this._items.length; i < n; ++i) {
       const item = this._items[i];
-      const indices: ReadonlyArray<number> = null;
+      const indices: ReadonlyArray<number> = [];
       const active = false;
       content[i] = this.renderer.renderItem({ item, indices, active });
     }

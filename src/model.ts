@@ -24,6 +24,7 @@ import { SimSetupConfigureWidget } from './widgets/sim-setup-configure-widget';
 
 import { SimSetupBuildWidget } from './widgets/sim-setup-build-widget';
 
+
 export namespace MosaikDockerExtension {
   /**
    * Definition of initialization options of class MosaikDockerExtension.
@@ -160,7 +161,7 @@ export class MosaikDockerExtension implements IMosaikDockerExtension {
       'configure_sim_setup',
       'POST',
       {
-        dir: dir === undefined ? this._simSetupRoot : dir,
+        dir: this.simSetupRoot,
         dockerFile: data.dockerFile,
         scenarioFile: data.scenarioFile,
         extraFiles: data.extraFiles,
@@ -191,8 +192,16 @@ export class MosaikDockerExtension implements IMosaikDockerExtension {
     // Path to root folder of currently active simulation setup.
     const simSetupDir = this._simSetupRoot;
 
+    if (!simSetupDir) return Promise.reject(
+      `[mosaik-docker-jl] buildSimSetup() failed! \nsimulation setup directory Undefined:`
+    );
+
     // Create new widget for displaying the build status.
     const simSetupBuildWidget = new SimSetupBuildWidget({ simSetupDir });
+
+    if (!this._app) return Promise.reject(
+      `[mosaik-docker-jl] buildSimSetup() failed! \nstatus: front end shell not available`
+    );
 
     // Attach the widget to the main work area.
     this._app.shell.add(simSetupBuildWidget, 'main');
@@ -240,7 +249,7 @@ comm.close( build['status'] )`;
       if (status === 'ok') {
         return Promise.resolve();
       }
-    } catch (error) {
+    } catch (error: any) {
       simSetupBuildWidget.done();
       return Promise.reject(
         `[mosaik-docker-jl] buildSimSetup() failed! \nstatus: ${
@@ -294,11 +303,18 @@ comm.close( build['status'] )`;
     // Path to sim setup directory that is to be deleted.
     const delSimSetupRoot = this._simSetupRoot;
 
+    if (!delSimSetupRoot) return Promise.reject(
+      `[mosaik-docker-jl] buildSimSetup() failed! \nsimulation setup directory Undefined:`
+    );
+
     // Change to parent directory of this sim setup's root directory.
     if (undefined === this._userHomeDir) {
       await this._retrieveUserHomeDir();
     }
-    const cdDir = PathExt.relative(delSimSetupRoot, this._userHomeDir);
+    const cdDir = PathExt.relative(
+      delSimSetupRoot,
+      this.userHomeDir
+    );
     await this._fileBrowser.model.cd(cdDir);
 
     // Execute command 'delete_sim_setup' on the server.
@@ -484,7 +500,7 @@ comm.close( build['status'] )`;
 
     if (0 === code) {
       return Promise.resolve({
-        dir: this._simSetupRoot,
+        dir: this.simSetupRoot,
         status: await response.message
       });
     }
@@ -506,10 +522,7 @@ comm.close( build['status'] )`;
       if (undefined === this._userHomeDir) {
         await this._retrieveUserHomeDir();
       }
-      const relSetupPath = PathExt.relative(
-        this._userHomeDir,
-        this._simSetupRoot
-      );
+      const relSetupPath = PathExt.relative(this.userHomeDir, this.simSetupRoot);
       const configFilePath = PathExt.join(relSetupPath, 'mosaik-docker.json');
 
       // Retrieve the file from the server.
@@ -557,6 +570,10 @@ comm.close( build['status'] )`;
       );
     }
 
+    if (!this._app) return Promise.reject(
+      `[mosaik-docker-jl] buildSimSetup() failed! \nstatus: front end shell not available`
+    );
+
     if (!this._simStatusWidget.isAttached) {
       // Attach the widget to the main work area if it's not there.
       this._app.shell.add(this._simStatusWidget, 'main');
@@ -597,6 +614,10 @@ comm.close( build['status'] )`;
       configData: await this.getSimSetupConfigData()
     });
 
+    if (!this._app) return Promise.reject(
+      `[mosaik-docker-jl] buildSimSetup() failed! \nstatus: front end shell not available`
+    );
+
     // Attach the widget to the main work area.
     this._app.shell.add(simSetupConfigureWidget, 'main');
 
@@ -619,14 +640,14 @@ comm.close( build['status'] )`;
    * (absolute path).
    */
   get simSetupRoot(): string {
-    return this._simSetupRoot;
+    return this._simSetupRoot === undefined ? '' : this._simSetupRoot
   }
 
   /**
    * Points to the user's JupyterLab home directory (absolute path).
-   */
-  get userHomeDir(): string {
-    return this._userHomeDir;
+  */
+ get userHomeDir(): string {
+    return this._userHomeDir === undefined ? '/' : this._userHomeDir
   }
 
   /**
@@ -726,7 +747,6 @@ comm.close( build['status'] )`;
     const response = await MosaikDockerAPI.sendRequest('get_user_home_dir');
 
     const code = await response.code;
-
     if (0 === code) {
       this._userHomeDir = await response.message;
       return Promise.resolve();
@@ -750,13 +770,13 @@ comm.close( build['status'] )`;
   private _simStatusWidgetTracker: WidgetTracker;
 
   /// This flag indicates if the current working directory is part of a valid simulation setup.
-  private _isValidSimSetup: boolean;
+  private _isValidSimSetup: boolean = false;
 
   /// Points to the root directory of the currently active simulation setup (absolute path).
-  private _simSetupRoot: string;
+  private _simSetupRoot: string | undefined = undefined;
 
   /// Points to the user's JupyterLab home directory (absolute path).
-  private _userHomeDir: string = undefined;
+  private _userHomeDir: string | undefined = undefined;
 
   /// Signal that indicates whether the state of the extension model has changed.
   private _modelChanged: Signal<this, void>;

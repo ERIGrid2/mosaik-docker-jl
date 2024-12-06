@@ -47,9 +47,15 @@ export class SimSetupCreateForm extends Widget {
    */
   getValue(): string {
     // Retrieve input field.
-    const value = this.node.querySelector('input').value;
-    // Return user input or defaul value.
-    return value === '' ? SimSetupCreateForm._defaultSetupName : value;
+    const input = this.node.querySelector('input');
+
+    if (input) {
+      const value = input.value;
+      // Return user input or default value.
+      return value === '' ? SimSetupCreateForm._defaultSetupName : value;
+    }
+
+    return SimSetupCreateForm._defaultSetupName;
   }
 
   /** Default value for simulation setup name (also used as placeholder in the widget). */

@@ -38,7 +38,7 @@ export class SimStatusWidget extends ReactWidget {
    * @returns widget instance
    */
   constructor(options: SimStatusWidget.IOptions) {
-    super(options);
+    super();
 
     // Set the CSS id.
     this.node.id = 'mosaik-docker-sim-status';

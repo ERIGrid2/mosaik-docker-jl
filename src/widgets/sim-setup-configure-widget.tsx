@@ -42,7 +42,7 @@ export class SimSetupConfigureWidget extends ReactWidget {
    * @returns widget instance
    */
   constructor(options: SimSetupConfigureWidget.IOptions) {
-    super(options);
+    super();
 
     // Define CSS id.
     this.id = 'mosaik-docker-sim-setup-config';
@@ -172,7 +172,7 @@ export class SimSetupConfigureComponent extends React.Component<
                 console.error(error);
                 showErrorMessage(
                   'An error occurred while attempting to display the simulation status!\n',
-                  error
+                  String(error)
                 );
               }
             }}

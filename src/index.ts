@@ -6,7 +6,7 @@ import {
 
 import { showErrorMessage } from '@jupyterlab/apputils';
 
-import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { IDefaultFileBrowser } from '@jupyterlab/filebrowser';
 
 import { ILauncher } from '@jupyterlab/launcher';
 
@@ -31,9 +31,9 @@ import { addSimTab } from './widgets/sim-tab';
 /**
  * Initialization data for the mosaik-docker-jl extension.
  */
-const extension: JupyterFrontEndPlugin<IMosaikDockerExtension> = {
-  id: '@jupyterlab/mosaik-docker-jl:plugin',
-  requires: [IFileBrowserFactory, ISettingRegistry],
+const plugin: JupyterFrontEndPlugin<IMosaikDockerExtension> = {
+  id: 'mosaik-docker-jl:plugin',
+  requires: [IDefaultFileBrowser, ISettingRegistry],
   optional: [ILauncher, ILayoutRestorer, IMainMenu],
   provides: IMosaikDockerExtension,
   activate: activateExtension,
@@ -43,30 +43,27 @@ const extension: JupyterFrontEndPlugin<IMosaikDockerExtension> = {
 /**
  * Export the extension as default.
  */
-export default extension;
+export default plugin;
 
 /**
  * Function invoked to activate the extension.
  */
 async function activateExtension(
   app: JupyterFrontEnd,
-  fileBrowserFactory: IFileBrowserFactory,
+  fileBrowser: IDefaultFileBrowser,
   settingRegistry: ISettingRegistry,
   launcher: ILauncher | null,
   restorer: ILayoutRestorer | null,
   mainMenu: IMainMenu | null
 ): Promise<IMosaikDockerExtension> {
-  // Get a reference to the default file browser extension
-  const fileBrowser = fileBrowserFactory.defaultBrowser;
-
   // Attempt to load the extension settings.
   let settings: ISettingRegistry.ISettings;
   try {
-    settings = await settingRegistry.load(extension.id);
+    settings = await settingRegistry.load(plugin.id);
   } catch (error) {
-    console.error(
-      `Failed to load settings for the mosaik-docker-jl extension.\n${error}`
-    );
+    const err = `Failed to load settings for the mosaik-docker-jl extension.\n${error}`;
+    console.error(err);
+    return Promise.reject(err);
   }
 
   // Initialize the model for interacting with the mosaik-docker package.
@@ -87,7 +84,7 @@ async function activateExtension(
     );
     showErrorMessage(
       'The mosaik_docker_jl server extension appears to be missing!',
-      error
+      String(error)
     );
   }
 

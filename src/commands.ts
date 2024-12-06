@@ -60,14 +60,18 @@ export function addCommands(
       // Retrieve simulation setup name.
       if (result.button.accept) {
         try {
-          // Attempt to create a new simulation setup.
-          const create = await model.createSimSetup(result.value);
-          console.log(`[${CommandIDs.createSimSetup}] ${create.status}`);
+          if (result.value) {
+            // Attempt to create a new simulation setup.
+            const create = await model.createSimSetup(result.value);
+            console.log(`[${CommandIDs.createSimSetup}] ${create.status}`);
+          } else {
+            throw new Error('simulation setup name undefined');
+          }
         } catch (error) {
           console.error(error);
           showErrorMessage(
             'An error occurred while attempting to create a new simulation setup!',
-            error
+            String(error)
           );
         }
       }
@@ -120,7 +124,7 @@ export function addCommands(
         console.error(error);
         showErrorMessage(
           'An error occurred while attempting to check the simulation setup!',
-          error
+          String(error)
         );
       }
     }
@@ -142,7 +146,7 @@ export function addCommands(
         console.error(error);
         showErrorMessage(
           'An error occurred while attempting to build the simulation setup!',
-          error
+          String(error)
         );
       }
     }
@@ -172,7 +176,7 @@ export function addCommands(
         console.error(error);
         showErrorMessage(
           'An error occurred while attempting to start a simulation!',
-          error
+          String(error)
         );
       }
     }
@@ -216,17 +220,22 @@ export function addCommands(
 
         // Cancel the selected simulation(s).
         if (result.button.accept) {
+          if (!result.value) throw new Error("simulation ID undefined");
+
           const cancelId = result.value.selectAll
             ? 'all'
             : result.value.selectItem;
-          const cancel = await model.cancelSim(cancelId);
+
+          if (!cancelId) throw new Error("invalid selection");
+
+          const cancel = await model.cancelSim(String(cancelId));
           console.log(`[${CommandIDs.cancelSim}] ${cancel.status}`);
         }
       } catch (error) {
         console.error(error);
         showErrorMessage(
           'An error occurred while attempting to cancel a simulation!',
-          error
+          String(error)
         );
       }
     }
@@ -270,9 +279,14 @@ export function addCommands(
 
         // Clear the selected simulation(s).
         if (result.button.accept) {
+          if (!result.value) throw new Error("simulation ID undefined");
+
           const clearId = result.value.selectAll
             ? 'all'
             : result.value.selectItem;
+
+          if (!clearId) throw new Error("invalid selection")
+
           const clear = await model.clearSim(clearId);
           console.log(`[${CommandIDs.clearSim}] ${clear.status}`);
         }
@@ -280,7 +294,7 @@ export function addCommands(
         console.error(error);
         showErrorMessage(
           'An error occurred while attempting to clear a simulation!',
-          error
+          String(error)
         );
       }
     }
@@ -324,9 +338,14 @@ export function addCommands(
 
         // Retrieve the results of selected simulation(s).
         if (result.button.accept) {
+          if (!result.value) throw new Error("simulation ID undefined");
+
           const getResultsId = result.value.selectAll
             ? 'all'
             : result.value.selectItem;
+
+          if (!getResultsId) throw new Error("invalid selection");
+
           const getResults = await model.getSimResults(getResultsId);
           console.log(`[${CommandIDs.getSimResults}] ${getResults.status}`);
         }
@@ -334,7 +353,7 @@ export function addCommands(
         console.error(error);
         showErrorMessage(
           'An error occurred while attempting to get the simulation results!',
-          error
+          String(error)
         );
       }
     }
@@ -366,7 +385,7 @@ export function addCommands(
         if (!suppressError) {
           showErrorMessage(
             'An error occurred while attempting to display the simulation status!',
-            error
+            String(error)
           );
         }
       }
@@ -406,7 +425,7 @@ export function addCommands(
           console.error(error);
           showErrorMessage(
             'An error occurred while attempting to delete the simulation setup!',
-            error
+            String(error)
           );
         }
       }
