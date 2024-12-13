@@ -1,11 +1,6 @@
 import { URLExt } from '@jupyterlab/coreutils';
-
-import {
-  KernelManager,
-  KernelMessage,
-  ServerConnection
-} from '@jupyterlab/services';
-
+import { ServerConnection } from '@jupyterlab/services';
+import { JSONObject } from '@lumino/coreutils';
 import { UUID } from '@lumino/coreutils';
 
 /**
@@ -97,63 +92,84 @@ export namespace MosaikDockerAPI {
   }
 
   /**
-   * Execute Python code on the server (via a dedicated Python kernel).
-   * In the Python code, an instance of class CallbackComm (imported from
-   * mosaik_docker_jl.comm) named 'comm' is available, which can be used
-   * to send back data and trigger the execution of the callback functions
-   * 'onMsg' and 'onClose'.
+   * Make an asynchronous request to the server (using callbacks).
    *
-   * @param commTargetPrefix - prefix used for the kernel comm target
-   * @param executeCode - Python code to be executed
-   * @param onMsg - data from the kernel can be sent back to the frontend asynchronously via this callback function
-   * @param onClose - this callback function is executed when the kernel closes
+   * @param endPoint - request endpoints (as defined by the demo_app backend)
+   * @param onMsg - data can be sent back from the websocket to the frontend asynchronously via this callback function
+   * @param onClose - this callback function is executed when the websocket closes
    * @returns execution status
    */
-  export async function executeWithCallbacks(
-    commTargetPrefix: string,
-    executeCode: string,
-    onMsg: (msg: KernelMessage.ICommMsgMsg) => void | PromiseLike<void>,
-    onClose: (msg: KernelMessage.ICommCloseMsg) => void | PromiseLike<void>
+  export async function sendRequestWithCallbacks(
+    endPoint: string,
+    args: JSONObject,
+    onMsg: (msg: MessageEvent) => void | PromiseLike<void>,
+    onClose: (msg: CloseEvent) => void | PromiseLike<void>
   ): Promise<IExecuteResponse> {
-    const commTarget = commTargetPrefix + UUID.uuid4();
 
-    // Start a python kernel
-    const kernelManager = new KernelManager();
-    const kernel = await kernelManager.startNew({ name: 'python' });
-
-    // Register a new comm target and set the callbacks.
-    kernel.registerCommTarget(commTarget, (comm, commMsg) => {
-      if (commMsg.content.target_name !== commTarget) {
-        return;
-      }
-      comm.onMsg = onMsg;
-      comm.onClose = onClose;
-    });
-
-    // Add boilerplate code for initializing the callback interface (comm).
-    const code =
-      'from mosaik_docker_jl.comm import CallbackComm\n' +
-      `comm = CallbackComm( '${commTarget}' )\n` +
-      executeCode;
-
-    // Execute the code on the kernel.
-    const reply: KernelMessage.IExecuteReplyMsg = await kernel.requestExecute({
-      code: code
-    }).done;
-    const status = await reply.content.status;
-
-    // The kernel is no longer needed, try to shut it down.
     try {
-      await kernel.shutdown();
+      // Create new websocket.
+      let ws = await Private._createWebSocket(endPoint, onMsg, onClose);
+
+      // Send a request to the websocket as soon as it is open.
+      await ws.send(JSON.stringify(args));
     } catch (error) {
-      return Promise.reject({ status: 'kernel-error', error: error });
+      return Promise.reject({ status: 'error', error: error });
     }
 
-    if (status === 'error') {
-      const errorMessage = reply.content as KernelMessage.IReplyErrorContent;
-      return Promise.reject({ status: status, error: errorMessage.evalue });
+    return Promise.resolve({ status: 'ok' });
+  }
+}
+
+/**
+ * A namespace for private methods.
+ */
+namespace Private {
+  /**
+   * Create a new websocket.
+   *
+   * @param endPoint - request endpoints (as defined by the demo_app backend)
+   * @param onMsg - data can be sent back from the websocket to the frontend asynchronously via this callback function
+   * @param onClose - this callback function is executed when the websocket closes
+   * @returns returns the websocket instance as soon as it opens
+   */
+  export async function _createWebSocket(
+    endPoint: string,
+    onMsg: (msg: MessageEvent) => void | PromiseLike<void>,
+    onClose: (msg: CloseEvent) => void | PromiseLike<void>
+  ): Promise<WebSocket> {
+    // Retrieve server connection settings.
+    const settings = ServerConnection.makeSettings();
+
+    // Create a unique endpoint with the help of a (random) UUID.
+    let url = URLExt.join(
+      settings.wsUrl,
+      'mosaik_docker_jl', // API Namespace
+      endPoint,
+      UUID.uuid4()
+    );
+
+    // If token authentication is in use.
+    const token = settings.token;
+    if (settings.appendToken && token !== '') {
+      url = url + `&token=${encodeURIComponent(token)}`;
     }
 
-    return Promise.resolve({ status: status });
+    // Return the websocket as a promise, which resolves as soon as the websocket opens.
+    return new Promise(
+      (resolve, reject) => {
+        // Create new websocket.
+        let ws = new settings.WebSocket(url);
+
+        // Ensure incoming binary messages are not blobs.
+        ws.binaryType = 'arraybuffer';
+
+        // Set callbacks.
+        ws.onmessage = onMsg;
+        ws.onclose = onClose;
+        ws.onopen = () => {
+          // Resolve the promise as soon as the websocket opens.
+          resolve(ws);
+        };
+    });
   }
 }

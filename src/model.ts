@@ -209,32 +209,26 @@ export class MosaikDockerExtension implements IMosaikDockerExtension {
     // Activate the widget
     this._app.shell.activateById(simSetupBuildWidget.id);
 
-    // Specify prefix for communication target.
-    const commTargetPrefix = `buildSimSetup@${simSetupDir}#`;
-
-    // Specify code to be executed on the server. Use callback interface 'comm'
-    // to send back output (see function executeWithCallbacks for details).
-    const code = `
-from mosaik_docker.cli.build_sim_setup import build_sim_setup
-build = build_sim_setup( '${simSetupDir}', comm.send_line )
-comm.close( build['status'] )`;
-
     // Create promise delegate for waiting for the callback interface to be closed.
     const check = new PromiseDelegate();
 
     try {
-      const executeReply = await MosaikDockerAPI.executeWithCallbacks(
-        commTargetPrefix,
-        code,
+      const executeReply = await MosaikDockerAPI.sendRequestWithCallbacks(
+        'build_sim_setup',
+        {dir: simSetupDir},
         msg => {
           // onMsg callback function.
           // Update build status with reply messages.
-          simSetupBuildWidget.updateStatus(msg.content.data);
+          simSetupBuildWidget.updateStatus({
+            out: msg.data as string
+          });
         },
         msg => {
           // onClose callback function.
           // Update build status with final reply message.
-          simSetupBuildWidget.done(msg.content.data);
+          simSetupBuildWidget.done({
+            done: msg.reason as string
+          });
           // Resolve this promise to signal that the
           // callback interface will be closed now.
           check.resolve(undefined);

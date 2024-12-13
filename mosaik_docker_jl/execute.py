@@ -2,6 +2,7 @@
 Module for executing commands, sending results back to the handlers
 '''
 import os
+import subprocess
 from ._version import __version__
 
 from mosaik_docker.cli.create_sim_setup import create_sim_setup as md_create_sim_setup
@@ -15,6 +16,8 @@ from mosaik_docker.cli.clear_sim import clear_sim as md_clear_sim
 from mosaik_docker.cli.get_sim_status import get_sim_status as md_get_sim_status
 from mosaik_docker.cli.get_sim_results import get_sim_results as md_get_sim_results
 from mosaik_docker.cli.get_sim_ids import get_sim_ids as md_get_sim_ids
+from mosaik_docker.cli.build_sim_setup import build_sim_setup as md_build_sim_setup
+from mosaik_docker.util.get_default_docker_host import get_default_docker_host as md_get_default_docker_host
 
 
 class Execute:
@@ -22,9 +25,18 @@ class Execute:
     A single class to execute commands on the backend.
     '''
 
-    def __init__( self, contents_manager ):
+    def __init__( self, contents_manager, use_rootless_docker = False ):
         self.contents_manager = contents_manager
         self.root_dir = os.path.expanduser( contents_manager.root_dir )
+        self.docker_host = self._get_rootless_docker_host() if use_rootless_docker else md_get_default_docker_host()
+
+
+    def _get_rootless_docker_host(self):
+        '''
+        :return: URL to the user-specific daemon socket to connect to when running rootless docker.
+        '''
+        res = subprocess.run(['id', '-u', os.getenv( 'USER' )], capture_output = True)
+        return f'unix:///run/user/{ int( res.stdout ) }/docker.sock'
 
 
     def version( self ):
@@ -159,7 +171,7 @@ class Execute:
         response = {}
 
         try:
-            delete = md_delete_sim_setup( dir )
+            delete = md_delete_sim_setup( dir, docker_host = self.docker_host )
             response[ 'code' ] = 0 if delete[ 'valid' ] else 1
             response[ 'message' ] = delete[ 'status' ]
 
@@ -182,7 +194,7 @@ class Execute:
         response = {}
 
         try:
-            sim_id = md_start_sim( dir )
+            sim_id = md_start_sim( dir, docker_host = self.docker_host )
 
             response[ 'code' ] = 0
             response[ 'message' ] = 'started new simulation with ID = {}'.format( sim_id )
@@ -207,7 +219,7 @@ class Execute:
         response = {}
 
         try:
-            sim_id = md_cancel_sim( dir, id )
+            sim_id = md_cancel_sim( dir, id, docker_host = self.docker_host )
 
             response[ 'code' ] = 0
             response[ 'message' ] = 'cancelled simulation with ID = {}'.format( sim_id )
@@ -232,7 +244,7 @@ class Execute:
         response = {}
 
         try:
-            sim_id = md_clear_sim( dir, id )
+            sim_id = md_clear_sim( dir, id, docker_host = self.docker_host )
 
             response[ 'code' ] = 0
             response[ 'message' ] = 'cleared simulation with ID = {}'.format( sim_id )
@@ -256,7 +268,7 @@ class Execute:
         response = {}
 
         try:
-            status = md_get_sim_status( dir )
+            status = md_get_sim_status( dir, docker_host = self.docker_host )
 
             response[ 'code' ] = 0
             response[ 'message' ] = status
@@ -281,7 +293,7 @@ class Execute:
         response = {}
 
         try:
-            sim_id = md_get_sim_results( dir, id )
+            sim_id = md_get_sim_results( dir, id, docker_host = self.docker_host )
 
             response[ 'code' ] = 0
             response[ 'message' ] = 'retrieved results from simulation with ID = {}'.format( sim_id )
@@ -314,5 +326,37 @@ class Execute:
 
             response[ 'code' ] = 2
             response[ 'error' ] = str( err )
+
+        return response
+
+
+    def build_sim_setup( self, dir, out_stream ):
+        '''
+        Build simulation setup as preparation for running the simulation.
+        This includes building the Docker image of the mosaik orchestrator.
+
+        :param dir: path to simulation setup (string)
+        :param out_stream: output from the build process to stderr will be piped to this stream (callable)
+        :param url_docker_host: URL to the daemon socket to connect to when running docker
+        :return: return dict with status of build process:
+            {
+                'valid': flag indicating if build succeded (boolean)
+                'status': detailed status message (string)
+            }
+        '''
+
+        response = {}
+
+        try:
+
+            build_status = md_build_sim_setup( dir, out_stream, docker_host = self.docker_host )
+
+            response[ 'code' ] = 0 if build_status['valid'] else 1
+            response[ 'message' ] = build_status['status']
+
+        except Exception as err:
+
+            response[ 'code' ] = 2
+            response[ 'message' ] = str( err )
 
         return response

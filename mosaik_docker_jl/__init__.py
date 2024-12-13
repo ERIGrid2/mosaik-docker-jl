@@ -34,10 +34,13 @@ def _load_jupyter_server_extension(server_app):
     server_app: jupyterlab.labapp.LabApp
         JupyterLab application instance
     """
-    exe = Execute( server_app.web_app.settings[ 'contents_manager' ] )
-    server_app.web_app.settings[ 'exe' ] = exe
+    exe = Execute(
+        contents_manager = server_app.web_app.settings[ 'contents_manager' ],
+        use_rootless_docker = True
+    )
 
-    # server_app.web_app.settings[ 'log' ] = server_app.log
+    server_app.web_app.settings[ 'exe' ] = exe
+    server_app.web_app.settings[ 'log' ] = server_app.log
 
     setup_handlers(server_app.web_app)
     server_app.log.info(f'Registered {__module_name__} (version {__version__}) server extension')

@@ -2,22 +2,28 @@ from ._module_name import __module_name__
 
 import json
 
-from jupyter_server.base.handlers import APIHandler
+from jupyter_server.base.handlers import APIHandler, JupyterHandler
+from jupyter_server.base.zmqhandlers import WebSocketMixin
 from jupyter_server.utils import url_path_join as ujoin
+from tornado.websocket import WebSocketHandler
 import tornado
 
 
-class ExeHandler( APIHandler ):
+class ExeHandler:
     '''
-    Top-level parent class for execution handlers.
+    Parent class for execution handlers.
     '''
 
     @property
     def exe( self ):
         return self.settings['exe']
 
+    @property
+    def log( self ):
+        return self.settings['log']
 
-class VersionHandler( ExeHandler ):
+
+class VersionHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def get( self ):
@@ -28,7 +34,7 @@ class VersionHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class GetUserHomeDirHandler( ExeHandler ):
+class GetUserHomeDirHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def get( self ):
@@ -36,11 +42,10 @@ class GetUserHomeDirHandler( ExeHandler ):
         Handler for `get_user_home_dir` command.
         '''
         response = self.exe.get_user_home_dir()
-        self.log.info(f'RESPONSE = {response}')
         self.finish( json.dumps( response ) )
 
 
-class GetSimSetupRootHandler( ExeHandler ):
+class GetSimSetupRootHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -63,7 +68,7 @@ class GetSimSetupRootHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class CreateSimSetupHandler( ExeHandler ):
+class CreateSimSetupHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -88,7 +93,7 @@ class CreateSimSetupHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class ConfigureSimSetupHandler( ExeHandler ):
+class ConfigureSimSetupHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -121,7 +126,7 @@ class ConfigureSimSetupHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class CheckSimSetupHandler( ExeHandler ):
+class CheckSimSetupHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -144,7 +149,7 @@ class CheckSimSetupHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class DeleteSimSetupHandler( ExeHandler ):
+class DeleteSimSetupHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -167,7 +172,7 @@ class DeleteSimSetupHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class StartSimHandler( ExeHandler ):
+class StartSimHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -190,7 +195,7 @@ class StartSimHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class CancelSimHandler( ExeHandler ):
+class CancelSimHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -215,7 +220,7 @@ class CancelSimHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class ClearSimHandler( ExeHandler ):
+class ClearSimHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -240,7 +245,7 @@ class ClearSimHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class GetSimStatusHandler( ExeHandler ):
+class GetSimStatusHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -263,7 +268,7 @@ class GetSimStatusHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class GetSimResultsHandler( ExeHandler ):
+class GetSimResultsHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -288,7 +293,7 @@ class GetSimResultsHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
-class GetSimIdsHandler( ExeHandler ):
+class GetSimIdsHandler( ExeHandler, APIHandler ):
 
     @tornado.web.authenticated
     def post( self ):
@@ -311,6 +316,26 @@ class GetSimIdsHandler( ExeHandler ):
         self.finish( json.dumps( response ) )
 
 
+class BuildSimSetupHandler( WebSocketMixin, WebSocketHandler, ExeHandler, JupyterHandler ):
+
+    def open(self, id):
+        self.log.info('WebSocket opened - id = {}'.format(id))
+
+    async def on_message(self, message):
+        # Retrieve data.
+        data = json.loads(message)
+        sim_setup_dir = data['dir']
+
+        # Execute `build_sim_setup` command and retrieve response.
+        response = self.exe.build_sim_setup(sim_setup_dir, self.write_message)
+
+        # Close the web socket.
+        self.close(reason = response['message'])
+
+    def on_close(self):
+        self.log.info('WebSocket closed: {}'.format(self.close_reason))
+
+
 def setup_handlers( web_app ):
     '''
     Add handlers for plug-in back-end to main application.
@@ -331,6 +356,7 @@ def setup_handlers( web_app ):
         ( 'get_sim_status', GetSimStatusHandler ),
         ( 'get_sim_results', GetSimResultsHandler ),
         ( 'get_sim_ids', GetSimIdsHandler ),
+        ( 'build_sim_setup/(.*)$', BuildSimSetupHandler ),
     ]
 
     # Retrieve the base URL.
