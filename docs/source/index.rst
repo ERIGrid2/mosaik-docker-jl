@@ -18,6 +18,7 @@ Find information about how to use the mosaik-docker JupyterLab package :doc:`her
    :caption: Usage
 
    /usage
+   /example
 
 Installation
 ============
