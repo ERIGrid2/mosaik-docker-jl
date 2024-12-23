@@ -318,22 +318,24 @@ class GetSimIdsHandler( ExeHandler, APIHandler ):
 
 class BuildSimSetupHandler( WebSocketMixin, WebSocketHandler, ExeHandler, JupyterHandler ):
 
-    def open(self, id):
-        self.log.info('WebSocket opened - id = {}'.format(id))
+    def open( self, id ):
+        self.log.info( 'WebSocket opened - id = {}'.format( id ) )
 
-    async def on_message(self, message):
+    async def on_message( self, message ):
         # Retrieve data.
-        data = json.loads(message)
+        data = json.loads( message )
         sim_setup_dir = data['dir']
 
         # Execute `build_sim_setup` command and retrieve response.
-        response = self.exe.build_sim_setup(sim_setup_dir, self.write_message)
+        response = self.exe.build_sim_setup( sim_setup_dir, self.write_message )
+        self.write_message( response['message'] )
 
         # Close the web socket.
-        self.close(reason = response['message'])
+        exit_code = response['code']
+        self.close( reason = f'exit code: { exit_code }' )
 
     def on_close(self):
-        self.log.info('WebSocket closed: {}'.format(self.close_reason))
+        self.log.info( f'WebSocket closed: { self.close_reason }' )
 
 
 def setup_handlers( web_app ):
