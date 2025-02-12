@@ -1,6 +1,6 @@
 {
     "name": "mosaik-docker-jl",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "A JupyterLab extension for executing co-simulations based on the mosaik framework and Docker.",
     "keywords": [
         "jupyter",
